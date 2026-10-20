@@ -1,0 +1,399 @@
+@import "tailwindcss";
+
+/* ───────────── Yedi İklim design tokens ───────────── */
+:root {
+  --bg: #f6f3ec;
+  --surface: #fbf9f4;
+  --surface-2: #efebe2;
+  --ink: #1c1f23;
+  --ink-2: #4a4f55;
+  --ink-3: #7d8288;
+  --line: #e3ddd1;
+  --line-2: #d6cfc1;
+  --teal: #12807f;
+  --teal-ink: #0b5e5d;
+  --teal-soft: #ddeeeb;
+  --teal-cover: #3bb6b3;
+  --amber: #8a5a12;
+  --amber-soft: #f3e8d2;
+  --rose: #a63d36;
+  --rose-soft: #f5e2df;
+  --green: #2e7650;
+  --green-soft: #e1efe5;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 0 rgb(28 31 35 / 0.04), 0 10px 30px -18px rgb(28 31 35 / 0.18);
+  --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-teal: var(--teal);
+  --color-teal-ink: var(--teal-ink);
+  --color-teal-soft: var(--teal-soft);
+  --color-teal-cover: var(--teal-cover);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-rose: var(--rose);
+  --color-rose-soft: var(--rose-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-display), ui-serif, Georgia, serif;
+  --radius-card: var(--radius);
+  --radius-ctl: var(--radius-sm);
+  --shadow-soft: var(--shadow);
+  --ease-out-soft: var(--ease);
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body {
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  min-height: 100dvh;
+}
+::selection {
+  background: var(--teal-soft);
+  color: var(--teal-ink);
+}
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ───────────── primitives ───────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.hairline {
+  border-color: var(--line);
+}
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 550;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    transform 0.2s var(--ease);
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--surface);
+}
+.btn-primary:hover {
+  background: #2c3035;
+}
+.btn-teal {
+  background: var(--teal);
+  color: #fff;
+}
+.btn-teal:hover {
+  background: var(--teal-ink);
+}
+.btn-ghost {
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  background: transparent;
+}
+.btn-ghost:hover {
+  border-color: var(--line-2);
+  color: var(--ink);
+  background: var(--surface);
+}
+.btn-quiet {
+  color: var(--ink-2);
+}
+.btn-quiet:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  color: var(--ink-2);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.icon-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.icon-btn[aria-pressed="true"] {
+  color: var(--teal);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.7rem;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 550;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  background: var(--surface);
+}
+.input {
+  width: 100%;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0 0.9rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-soft);
+}
+textarea.input {
+  height: auto;
+  padding: 0.75rem 0.9rem;
+  line-height: 1.6;
+}
+.progress-track {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 999px;
+  transition: width 0.8s var(--ease);
+}
+
+/* ───────────── lesson prose ───────────── */
+.prose-yi {
+  color: var(--ink);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+.prose-yi p {
+  margin: 0.6em 0;
+}
+.prose-yi strong {
+  font-weight: 650;
+  color: var(--ink);
+}
+.prose-yi em {
+  color: var(--teal-ink);
+  font-style: normal;
+  font-weight: 520;
+}
+.prose-yi ul,
+.prose-yi ol {
+  margin: 0.6em 0;
+  padding-left: 1.2em;
+}
+.prose-yi ul {
+  list-style: none;
+  padding-left: 0;
+}
+.prose-yi ul > li {
+  position: relative;
+  padding-left: 1.1em;
+  margin: 0.35em 0;
+}
+.prose-yi ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.15em;
+  top: 0.75em;
+  width: 5px;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--teal);
+  opacity: 0.7;
+}
+.prose-yi ol {
+  list-style: decimal;
+}
+.prose-yi ol > li {
+  margin: 0.35em 0;
+}
+.prose-yi code {
+  font-size: 0.9em;
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: 0.05em 0.35em;
+}
+.prose-yi h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  margin: 1.2em 0 0.4em;
+}
+.prose-yi table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin: 0.8em 0;
+}
+.prose-yi th {
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.prose-yi td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.prose-yi tr:last-child td {
+  border-bottom: 0;
+}
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  margin: 0.9em 0;
+}
+.table-wrap table {
+  margin: 0;
+}
+.word-btn {
+  font-weight: 560;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--teal) 45%, transparent);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: left;
+}
+.word-btn:hover {
+  color: var(--teal-ink);
+  background: var(--teal-soft);
+}
+.reading-word {
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease);
+}
+.reading-word:hover {
+  background: var(--teal-soft);
+}
+
+/* ───────────── motion ───────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.6s var(--ease) both;
+}
+.rise-1 {
+  animation-delay: 0.06s;
+}
+.rise-2 {
+  animation-delay: 0.12s;
+}
+.rise-3 {
+  animation-delay: 0.18s;
+}
+.rise-4 {
+  animation-delay: 0.24s;
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(18 128 127 / 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(18 128 127 / 0);
+  }
+}
+.recording {
+  animation: pulse-ring 1.4s var(--ease) infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 0, var(--surface) 50%, var(--surface-2) 100%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

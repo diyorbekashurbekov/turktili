@@ -1,0 +1,1571 @@
+[
+ {
+  "page": 16,
+  "unit": 1,
+  "items": [
+   {
+    "tr": "Merhaba!",
+    "kz": "сәлем",
+    "wordId": "w147"
+   },
+   {
+    "tr": "Memnun oldum!",
+    "kz": "қуаныштымын (танысқаныма)",
+    "wordId": "w313"
+   },
+   {
+    "tr": "Sizi tanıştırayım",
+    "kz": "Сізді таныстырайын",
+    "wordId": "w2401"
+   },
+   {
+    "tr": "Ben de memnun oldum",
+    "kz": "Мен де қуаныштымын",
+    "wordId": "w2402"
+   },
+   {
+    "tr": "İyi günler",
+    "kz": "қайырлы күн",
+    "wordId": "w197"
+   },
+   {
+    "tr": "Görüşmek üzere",
+    "kz": "кездескенше",
+    "wordId": "w332"
+   },
+   {
+    "tr": "Nasılsınız?",
+    "kz": "қалайсыз?",
+    "wordId": "w318"
+   },
+   {
+    "tr": "İyiyim",
+    "kz": "жақсымын",
+    "wordId": "w320"
+   },
+   {
+    "tr": "Ben de iyiyim",
+    "kz": "Мен де жақсымын",
+    "wordId": "w2403"
+   },
+   {
+    "tr": "Teşekkür ederim!",
+    "kz": "рахмет (алғыс айтамын)",
+    "wordId": "w319"
+   },
+   {
+    "tr": "Tanıştığımıza memnun oldum",
+    "kz": "танысқанымызға қуаныштымын",
+    "wordId": "w196"
+   }
+  ]
+ },
+ {
+  "page": 24,
+  "unit": 1,
+  "items": [
+   {
+    "tr": "Günaydın!",
+    "kz": "қайырлы таң",
+    "wordId": "w305"
+   },
+   {
+    "tr": "sınıf",
+    "kz": "сынып / сыныпта",
+    "wordId": "w200"
+   },
+   {
+    "tr": "dil",
+    "kz": "тіл",
+    "wordId": "w41"
+   },
+   {
+    "tr": "Nerelisiniz?",
+    "kz": "қай жерліксіз?",
+    "wordId": "w148"
+   },
+   {
+    "tr": "Hoşça kal!",
+    "kz": "сау бол (қалып бара жатқанға)",
+    "wordId": "w306"
+   },
+   {
+    "tr": "Hoş geldiniz",
+    "kz": "қош келдіңіз",
+    "wordId": "w276"
+   },
+   {
+    "tr": "uzun",
+    "kz": "ұзын / жіңішке",
+    "wordId": "w217"
+   },
+   {
+    "tr": "kısa",
+    "kz": "қысқа",
+    "wordId": "w519"
+   },
+   {
+    "tr": "var",
+    "kz": "бар / жоқ",
+    "wordId": "w155"
+   },
+   {
+    "tr": "kahvaltı",
+    "kz": "таңғы ас",
+    "wordId": "w189"
+   },
+   {
+    "tr": "Affedersiniz!",
+    "kz": "кешіріңіз",
+    "wordId": "w513"
+   },
+   {
+    "tr": "yok",
+    "kz": "бар / жоқ",
+    "wordId": "w155"
+   }
+  ]
+ },
+ {
+  "page": 30,
+  "unit": 1,
+  "items": [
+   {
+    "tr": "Günaydın!",
+    "kz": "қайырлы таң",
+    "wordId": "w305"
+   },
+   {
+    "tr": "Görüşmek üzere!",
+    "kz": "кездескенше",
+    "wordId": "w332"
+   },
+   {
+    "tr": "Önemli değil",
+    "kz": "оқасы жоқ (маңызды емес)",
+    "wordId": "w582"
+   },
+   {
+    "tr": "Maalesef",
+    "kz": "өкінішке қарай",
+    "wordId": "w569"
+   },
+   {
+    "tr": "İyi geceler",
+    "kz": "қайырлы түн",
+    "wordId": "w523"
+   },
+   {
+    "tr": "Hoş bulduk!",
+    "kz": "«қош келдіңіз»-ге жауап (жақсы келдік)",
+    "wordId": "w526"
+   },
+   {
+    "tr": "Lütfen!",
+    "kz": "өтінемін",
+    "wordId": "w573"
+   },
+   {
+    "tr": "İyi akşamlar",
+    "kz": "қайырлы кеш",
+    "wordId": "w522"
+   },
+   {
+    "tr": "Hoşça kal!",
+    "kz": "сау бол (қалып бара жатқанға)",
+    "wordId": "w306"
+   },
+   {
+    "tr": "Özür dilerim",
+    "kz": "кешірім сұраймын",
+    "wordId": "w583"
+   },
+   {
+    "tr": "Elveda!",
+    "kz": "қош бол (ұзақ уақытқа)",
+    "wordId": "w524"
+   },
+   {
+    "tr": "Buyurun",
+    "kz": "марқабат, мархабат етіңіз",
+    "wordId": "w517"
+   }
+  ]
+ },
+ {
+  "page": 38,
+  "unit": 2,
+  "items": [
+   {
+    "tr": "anneanne (nine)",
+    "kz": "әже (ананың анасы)",
+    "wordId": "w650"
+   },
+   {
+    "tr": "babaanne (nine)",
+    "kz": "әже (әкенің анасы)",
+    "wordId": "w651"
+   },
+   {
+    "tr": "erkek kardeş",
+    "kz": "іні",
+    "wordId": "w680"
+   },
+   {
+    "tr": "ağabey",
+    "kz": "аға",
+    "wordId": "w633"
+   },
+   {
+    "tr": "çocuk",
+    "kz": "бала",
+    "wordId": "w564"
+   },
+   {
+    "tr": "abla",
+    "kz": "әпке",
+    "wordId": "w634"
+   },
+   {
+    "tr": "dede",
+    "kz": "ата / атам",
+    "wordId": "w649"
+   },
+   {
+    "tr": "anne",
+    "kz": "ана",
+    "wordId": "w335"
+   },
+   {
+    "tr": "baba",
+    "kz": "әке / әкем",
+    "wordId": "w631"
+   },
+   {
+    "tr": "kız kardeş",
+    "kz": "қарындас, сіңлі",
+    "wordId": "w638"
+   },
+   {
+    "tr": "hala",
+    "kz": "әкенің әпкесі/қарындасы (апа)",
+    "wordId": "w652"
+   },
+   {
+    "tr": "amca",
+    "kz": "әкенің ағасы/інісі (көке)",
+    "wordId": "w654"
+   }
+  ]
+ },
+ {
+  "page": 48,
+  "unit": 2,
+  "items": [
+   {
+    "tr": "salon",
+    "kz": "зал, қонақ бөлмесі",
+    "wordId": "w686"
+   },
+   {
+    "tr": "oda",
+    "kz": "бөлме",
+    "wordId": "w195"
+   },
+   {
+    "tr": "yatak odası",
+    "kz": "жатын бөлме",
+    "wordId": "w682"
+   },
+   {
+    "tr": "misafir odası",
+    "kz": "қонақ бөлмесі",
+    "wordId": "w784"
+   },
+   {
+    "tr": "çocuk odası",
+    "kz": "балалар бөлмесі",
+    "wordId": "w699"
+   },
+   {
+    "tr": "banyo",
+    "kz": "жуынатын бөлме",
+    "wordId": "w685"
+   },
+   {
+    "tr": "bahçe",
+    "kz": "бақ, аула",
+    "wordId": "w207"
+   },
+   {
+    "tr": "tuvalet",
+    "kz": "дәретхана",
+    "wordId": "w785"
+   },
+   {
+    "tr": "balkon",
+    "kz": "балкон",
+    "wordId": "w695"
+   },
+   {
+    "tr": "ev",
+    "kz": "үй",
+    "wordId": "w162"
+   },
+   {
+    "tr": "mutfak",
+    "kz": "ас үй",
+    "wordId": "w377"
+   },
+   {
+    "tr": "oturma odası",
+    "kz": "қонақ бөлме (отыратын бөлме)",
+    "wordId": "w684"
+   }
+  ]
+ },
+ {
+  "page": 52,
+  "unit": 2,
+  "items": [
+   {
+    "tr": "cadde",
+    "kz": "үлкен көше, даңғыл",
+    "wordId": "w32"
+   },
+   {
+    "tr": "sokak",
+    "kz": "көше",
+    "wordId": "w31"
+   },
+   {
+    "tr": "şehir",
+    "kz": "қала",
+    "wordId": "w577"
+   },
+   {
+    "tr": "market",
+    "kz": "дүкен, маркет",
+    "wordId": "w418"
+   },
+   {
+    "tr": "mahalle",
+    "kz": "маһалла, аудан бөлігі",
+    "wordId": "w29"
+   },
+   {
+    "tr": "sinema",
+    "kz": "кинотеатр",
+    "wordId": "w810"
+   },
+   {
+    "tr": "adres",
+    "kz": "мекенжай",
+    "wordId": "w163"
+   },
+   {
+    "tr": "postane",
+    "kz": "пошта",
+    "wordId": "w426"
+   },
+   {
+    "tr": "ev",
+    "kz": "үй",
+    "wordId": "w162"
+   },
+   {
+    "tr": "mağaza",
+    "kz": "дүкен",
+    "wordId": "w826"
+   }
+  ]
+ },
+ {
+  "page": 63,
+  "unit": 3,
+  "items": [
+   {
+    "tr": "uçak",
+    "kz": "ұшақ",
+    "wordId": "w275"
+   },
+   {
+    "tr": "araba",
+    "kz": "көлік",
+    "wordId": "w336"
+   },
+   {
+    "tr": "vapur",
+    "kz": "паром, кеме (қалалық)",
+    "wordId": "w892"
+   },
+   {
+    "tr": "taksi",
+    "kz": "такси",
+    "wordId": "w891"
+   },
+   {
+    "tr": "yaz tatili",
+    "kz": "жазғы демалыс",
+    "wordId": "w945"
+   },
+   {
+    "tr": "tren",
+    "kz": "пойыз",
+    "wordId": "w893"
+   },
+   {
+    "tr": "güneşli",
+    "kz": "күн шуақты",
+    "wordId": "w922"
+   },
+   {
+    "tr": "yolculuk",
+    "kz": "саяхат, сапар",
+    "wordId": "w46"
+   },
+   {
+    "tr": "yağmurlu",
+    "kz": "жаңбырлы",
+    "wordId": "w214"
+   },
+   {
+    "tr": "hafta sonu",
+    "kz": "демалыс күндері (апта соңы)",
+    "wordId": "w264"
+   },
+   {
+    "tr": "Saat kaç?",
+    "kz": "Сағат неше?",
+    "wordId": "w2404"
+   },
+   {
+    "tr": "şekerli",
+    "kz": "қантты / қантсыз / қантсауыт",
+    "wordId": "w917"
+   }
+  ]
+ },
+ {
+  "page": 69,
+  "unit": 3,
+  "items": [
+   {
+    "tr": "Hayırlı işler!",
+    "kz": "істеріңіз табысты болсын (саудагерге сәлем)",
+    "wordId": "w946"
+   },
+   {
+    "tr": "Kolay gelsin!",
+    "kz": "жеңіл болсын (жұмыс істеп жатқанға)",
+    "wordId": "w947"
+   },
+   {
+    "tr": "balık",
+    "kz": "балық",
+    "wordId": "w337"
+   },
+   {
+    "tr": "Kaça?",
+    "kz": "Қанша тұрады?",
+    "wordId": "w2405"
+   },
+   {
+    "tr": "Ne kadar?",
+    "kz": "қанша?",
+    "wordId": "w174"
+   },
+   {
+    "tr": "salkım",
+    "kz": "шоқ (жүзім шоғы)",
+    "wordId": "w969"
+   },
+   {
+    "tr": "paket",
+    "kz": "пакет, қорап",
+    "wordId": "w972"
+   },
+   {
+    "tr": "taksitli",
+    "kz": "бөліп төлеу / бөліп төлеумен / бөліп төленетін",
+    "wordId": "w1018"
+   },
+   {
+    "tr": "demet",
+    "kz": "бау, шоқ",
+    "wordId": "w964"
+   },
+   {
+    "tr": "Kaç kilo?",
+    "kz": "Неше келі?",
+    "wordId": "w2406"
+   },
+   {
+    "tr": "peşin",
+    "kz": "қолма-қол (бірден төлеу)",
+    "wordId": "w1026"
+   },
+   {
+    "tr": "ucuz",
+    "kz": "арзан",
+    "wordId": "w1027"
+   }
+  ]
+ },
+ {
+  "page": 74,
+  "unit": 3,
+  "items": [
+   {
+    "tr": "hafta içi",
+    "kz": "жұмыс күндері (апта іші)",
+    "wordId": "w1065"
+   },
+   {
+    "tr": "hafta sonu",
+    "kz": "демалыс күндері (апта соңы)",
+    "wordId": "w264"
+   },
+   {
+    "tr": "bilet",
+    "kz": "билет",
+    "wordId": "w338"
+   },
+   {
+    "tr": "çay",
+    "kz": "шай",
+    "wordId": "w345"
+   },
+   {
+    "tr": "mevsim",
+    "kz": "жыл мезгілі",
+    "wordId": "w284"
+   },
+   {
+    "tr": "alışveriş",
+    "kz": "сауда, сатып алу",
+    "wordId": "w224"
+   },
+   {
+    "tr": "tiyatro",
+    "kz": "театр",
+    "wordId": "w1046"
+   },
+   {
+    "tr": "seyahat",
+    "kz": "саяхат",
+    "wordId": "w1090"
+   },
+   {
+    "tr": "sinema",
+    "kz": "кинотеатр",
+    "wordId": "w810"
+   },
+   {
+    "tr": "konser",
+    "kz": "концерт",
+    "wordId": "w1038"
+   },
+   {
+    "tr": "pazar",
+    "kz": "базар; жексенбі",
+    "wordId": "w236"
+   },
+   {
+    "tr": "yıl",
+    "kz": "жыл",
+    "wordId": "w238"
+   }
+  ]
+ },
+ {
+  "page": 83,
+  "unit": 4,
+  "items": [
+   {
+    "tr": "büfe",
+    "kz": "дүңгіршек",
+    "wordId": "w1124"
+   },
+   {
+    "tr": "bakkal",
+    "kz": "азық-түлік дүкені (шағын)",
+    "wordId": "w1169"
+   },
+   {
+    "tr": "ev",
+    "kz": "үй",
+    "wordId": "w162"
+   },
+   {
+    "tr": "apartman",
+    "kz": "көпқабатты үй",
+    "wordId": "w822"
+   },
+   {
+    "tr": "sokak",
+    "kz": "көше",
+    "wordId": "w31"
+   },
+   {
+    "tr": "mahalle",
+    "kz": "маһалла, аудан бөлігі",
+    "wordId": "w29"
+   },
+   {
+    "tr": "meydan",
+    "kz": "алаң",
+    "wordId": "w231"
+   },
+   {
+    "tr": "muhtarlık",
+    "kz": "мухтар кеңсесі (маһалла басшылығы)",
+    "wordId": "w233"
+   },
+   {
+    "tr": "muhtar",
+    "kz": "мухтар (маһалла басшысы)",
+    "wordId": "w1125"
+   },
+   {
+    "tr": "cadde",
+    "kz": "үлкен көше, даңғыл",
+    "wordId": "w32"
+   },
+   {
+    "tr": "park",
+    "kz": "саябақ",
+    "wordId": "w419"
+   },
+   {
+    "tr": "bulvar",
+    "kz": "бульвар, даңғыл",
+    "wordId": "w30"
+   }
+  ]
+ },
+ {
+  "page": 88,
+  "unit": 4,
+  "items": [
+   {
+    "tr": "kuzey",
+    "kz": "солтүстік / оңтүстік / шығыс / батыс",
+    "wordId": "w1177"
+   },
+   {
+    "tr": "güney",
+    "kz": "солтүстік / оңтүстік / шығыс / батыс",
+    "wordId": "w1177"
+   },
+   {
+    "tr": "batı",
+    "kz": "солтүстік / оңтүстік / шығыс / батыс",
+    "wordId": "w1177"
+   },
+   {
+    "tr": "doğu",
+    "kz": "солтүстік / оңтүстік / шығыс / батыс",
+    "wordId": "w1177"
+   },
+   {
+    "tr": "arkasında",
+    "kz": "артында",
+    "wordId": "w926"
+   },
+   {
+    "tr": "önünde",
+    "kz": "алдында",
+    "wordId": "w1121"
+   },
+   {
+    "tr": "içinde",
+    "kz": "ішінде / сыртында",
+    "wordId": "w1175"
+   },
+   {
+    "tr": "sağ",
+    "kz": "оң / сол",
+    "wordId": "w672"
+   },
+   {
+    "tr": "sol",
+    "kz": "оң / сол",
+    "wordId": "w672"
+   },
+   {
+    "tr": "ileri",
+    "kz": "алға / артқа",
+    "wordId": "w676"
+   },
+   {
+    "tr": "geri",
+    "kz": "алға / артқа",
+    "wordId": "w676"
+   },
+   {
+    "tr": "karşısında",
+    "kz": "қарсысында",
+    "wordId": "w1134"
+   }
+  ]
+ },
+ {
+  "page": 94,
+  "unit": 4,
+  "items": [
+   {
+    "tr": "kebapçı",
+    "kz": "кебабхана",
+    "wordId": "w1267"
+   },
+   {
+    "tr": "pirzola",
+    "kz": "пирзола (қабырға еті)",
+    "wordId": "w1311"
+   },
+   {
+    "tr": "tatlı",
+    "kz": "тәтті тағам",
+    "wordId": "w1285"
+   },
+   {
+    "tr": "içecek",
+    "kz": "сусын",
+    "wordId": "w1279"
+   },
+   {
+    "tr": "lokanta",
+    "kz": "асхана",
+    "wordId": "w374"
+   },
+   {
+    "tr": "garson",
+    "kz": "даяшы, официант",
+    "wordId": "w1271"
+   },
+   {
+    "tr": "hesap",
+    "kz": "есеп, шот (мейрамханада)",
+    "wordId": "w2407"
+   },
+   {
+    "tr": "acıkmak",
+    "kz": "ашығу",
+    "wordId": "w1312"
+   },
+   {
+    "tr": "İskender",
+    "kz": "Искендер кебабы",
+    "wordId": "w1277"
+   },
+   {
+    "tr": "sipariş",
+    "kz": "тапсырыс",
+    "wordId": "w1283"
+   },
+   {
+    "tr": "ödemek",
+    "kz": "төлеу",
+    "wordId": "w2408"
+   },
+   {
+    "tr": "yemek",
+    "kz": "жеу",
+    "wordId": "w803"
+   }
+  ]
+ },
+ {
+  "page": 104,
+  "unit": 5,
+  "items": [
+   {
+    "tr": "mimar",
+    "kz": "сәулетші",
+    "wordId": "w635"
+   },
+   {
+    "tr": "öğretmen",
+    "kz": "мұғалім",
+    "wordId": "w269"
+   },
+   {
+    "tr": "meslek",
+    "kz": "мамандық, кәсіп",
+    "wordId": "w240"
+   },
+   {
+    "tr": "doktor",
+    "kz": "дәрігер",
+    "wordId": "w415"
+   },
+   {
+    "tr": "eczacı",
+    "kz": "фармацевт",
+    "wordId": "w1420"
+   },
+   {
+    "tr": "manav",
+    "kz": "көкөніс-жеміс дүкені",
+    "wordId": "w216"
+   },
+   {
+    "tr": "berber",
+    "kz": "шаштараз (ерлер)",
+    "wordId": "w1428"
+   },
+   {
+    "tr": "tamirci",
+    "kz": "жөндеуші шебер",
+    "wordId": "w1406"
+   },
+   {
+    "tr": "veteriner",
+    "kz": "малдәрігер, ветеринар",
+    "wordId": "w559"
+   },
+   {
+    "tr": "şoför",
+    "kz": "жүргізуші",
+    "wordId": "w416"
+   },
+   {
+    "tr": "terzi",
+    "kz": "тігінші",
+    "wordId": "w560"
+   },
+   {
+    "tr": "polis",
+    "kz": "полиция қызметкері",
+    "wordId": "w483"
+   }
+  ]
+ },
+ {
+  "page": 110,
+  "unit": 5,
+  "items": [
+   {
+    "tr": "avukat",
+    "kz": "адвокат, заңгер",
+    "wordId": "w640"
+   },
+   {
+    "tr": "mimar",
+    "kz": "сәулетші",
+    "wordId": "w635"
+   },
+   {
+    "tr": "mühendis",
+    "kz": "инженер",
+    "wordId": "w1335"
+   },
+   {
+    "tr": "muayene",
+    "kz": "дәрігерлік қарау",
+    "wordId": "w2409"
+   },
+   {
+    "tr": "plan",
+    "kz": "жоспар",
+    "wordId": "w184"
+   },
+   {
+    "tr": "program",
+    "kz": "бағдарлама",
+    "wordId": "w1554"
+   },
+   {
+    "tr": "arkeolog",
+    "kz": "археолог",
+    "wordId": "w1550"
+   },
+   {
+    "tr": "aşçı",
+    "kz": "аспаз",
+    "wordId": "w1551"
+   },
+   {
+    "tr": "itfaiyeci",
+    "kz": "өрт сөндіруші",
+    "wordId": "w1552"
+   },
+   {
+    "tr": "marangoz",
+    "kz": "ағаш ұстасы",
+    "wordId": "w1553"
+   },
+   {
+    "tr": "polis",
+    "kz": "полиция қызметкері",
+    "wordId": "w483"
+   },
+   {
+    "tr": "şikâyet",
+    "kz": "шағым",
+    "wordId": "w1475"
+   }
+  ]
+ },
+ {
+  "page": 114,
+  "unit": 5,
+  "items": [
+   {
+    "tr": "hobi",
+    "kz": "хобби, әуестік",
+    "wordId": "w243"
+   },
+   {
+    "tr": "dağcılık",
+    "kz": "альпинизм, тауға шығу",
+    "wordId": "w1627"
+   },
+   {
+    "tr": "balık tutmak",
+    "kz": "балық аулау",
+    "wordId": "w1561"
+   },
+   {
+    "tr": "bisiklete binmek",
+    "kz": "велосипед тебу",
+    "wordId": "w2410"
+   },
+   {
+    "tr": "yüzmek",
+    "kz": "жүзу",
+    "wordId": "w865"
+   },
+   {
+    "tr": "süs eşyası",
+    "kz": "сәндік бұйым",
+    "wordId": "w1622"
+   },
+   {
+    "tr": "yürüyüş yapmak",
+    "kz": "серуендеу",
+    "wordId": "w1123"
+   },
+   {
+    "tr": "web sayfası",
+    "kz": "веб-бет",
+    "wordId": "w1589"
+   },
+   {
+    "tr": "usta",
+    "kz": "шебер",
+    "wordId": "w1543"
+   },
+   {
+    "tr": "neşeli",
+    "kz": "көңілді",
+    "wordId": "w1565"
+   },
+   {
+    "tr": "çaydanlık",
+    "kz": "шайнек (екі қабатты)",
+    "wordId": "w1628"
+   },
+   {
+    "tr": "şekerlik",
+    "kz": "қантты / қантсыз / қантсауыт",
+    "wordId": "w917"
+   }
+  ]
+ },
+ {
+  "page": 123,
+  "unit": 6,
+  "items": [
+   {
+    "tr": "rötar",
+    "kz": "рейстің кешігуі",
+    "wordId": "w2411"
+   },
+   {
+    "tr": "emniyet kuralları",
+    "kz": "қауіпсіздік ережелері",
+    "wordId": "w1655"
+   },
+   {
+    "tr": "pilot",
+    "kz": "ұшқыш",
+    "wordId": "w1546"
+   },
+   {
+    "tr": "pasaport",
+    "kz": "төлқұжат",
+    "wordId": "w1719"
+   },
+   {
+    "tr": "uçuş",
+    "kz": "ұшу, рейс",
+    "wordId": "w280"
+   },
+   {
+    "tr": "hostes",
+    "kz": "стюардесса",
+    "wordId": "w1702"
+   },
+   {
+    "tr": "kabin",
+    "kz": "кабина, салон",
+    "wordId": "w2412"
+   },
+   {
+    "tr": "uçak",
+    "kz": "ұшақ",
+    "wordId": "w275"
+   },
+   {
+    "tr": "uçuş modu",
+    "kz": "ұшу режимі",
+    "wordId": "w1661"
+   },
+   {
+    "tr": "kanat",
+    "kz": "қанат",
+    "wordId": "w1721"
+   },
+   {
+    "tr": "emniyet kemeri",
+    "kz": "қауіпсіздік белдігі",
+    "wordId": "w1722"
+   },
+   {
+    "tr": "çıkış kapısı",
+    "kz": "шығу есігі",
+    "wordId": "w2413"
+   }
+  ]
+ },
+ {
+  "page": 127,
+  "unit": 6,
+  "items": [
+   {
+    "tr": "otobüs",
+    "kz": "автобус",
+    "wordId": "w382"
+   },
+   {
+    "tr": "dolmuş",
+    "kz": "долмуш (жолаушы маршрутка)",
+    "wordId": "w1736"
+   },
+   {
+    "tr": "metro",
+    "kz": "метро",
+    "wordId": "w869"
+   },
+   {
+    "tr": "araba",
+    "kz": "көлік",
+    "wordId": "w336"
+   },
+   {
+    "tr": "tren",
+    "kz": "пойыз",
+    "wordId": "w893"
+   },
+   {
+    "tr": "minibüs",
+    "kz": "шағын автобус",
+    "wordId": "w1761"
+   },
+   {
+    "tr": "gemi",
+    "kz": "кеме",
+    "wordId": "w894"
+   },
+   {
+    "tr": "taksi",
+    "kz": "такси",
+    "wordId": "w891"
+   },
+   {
+    "tr": "vapur",
+    "kz": "паром, кеме (қалалық)",
+    "wordId": "w892"
+   },
+   {
+    "tr": "motosiklet",
+    "kz": "мотоцикл",
+    "wordId": "w2414"
+   },
+   {
+    "tr": "bisiklet",
+    "kz": "велосипед",
+    "wordId": "w737"
+   },
+   {
+    "tr": "otomobil",
+    "kz": "автокөлік",
+    "wordId": "w1762"
+   }
+  ]
+ },
+ {
+  "page": 134,
+  "unit": 6,
+  "items": [
+   {
+    "tr": "kar",
+    "kz": "қар / қарлы",
+    "wordId": "w1769"
+   },
+   {
+    "tr": "yağmurlu",
+    "kz": "жаңбырлы",
+    "wordId": "w214"
+   },
+   {
+    "tr": "sis",
+    "kz": "тұман / тұманды",
+    "wordId": "w1772"
+   },
+   {
+    "tr": "bulut",
+    "kz": "бұлт / бұлтты",
+    "wordId": "w1770"
+   },
+   {
+    "tr": "rüzgâr",
+    "kz": "жел / желді",
+    "wordId": "w1774"
+   },
+   {
+    "tr": "güneş",
+    "kz": "күн",
+    "wordId": "w355"
+   },
+   {
+    "tr": "sıcak",
+    "kz": "ыстық / (қате түр)",
+    "wordId": "w1097"
+   },
+   {
+    "tr": "güneşli",
+    "kz": "күн шуақты",
+    "wordId": "w922"
+   },
+   {
+    "tr": "soğuk",
+    "kz": "салқын / ащы",
+    "wordId": "w1282"
+   },
+   {
+    "tr": "serin",
+    "kz": "салқын",
+    "wordId": "w1793"
+   },
+   {
+    "tr": "ılık",
+    "kz": "жылы",
+    "wordId": "w1791"
+   },
+   {
+    "tr": "yağmur",
+    "kz": "жаңбыр",
+    "wordId": "w358"
+   }
+  ]
+ },
+ {
+  "page": 143,
+  "unit": 7,
+  "items": [
+   {
+    "tr": "görüntülü",
+    "kz": "бейнелі (бейне қоңырау)",
+    "wordId": "w1919"
+   },
+   {
+    "tr": "dokunmatik",
+    "kz": "сенсорлы",
+    "wordId": "w1876"
+   },
+   {
+    "tr": "hatırlamak",
+    "kz": "есіне алу",
+    "wordId": "w1887"
+   },
+   {
+    "tr": "ev telefonu",
+    "kz": "үй телефоны",
+    "wordId": "w562"
+   },
+   {
+    "tr": "unutmak",
+    "kz": "ұмыту",
+    "wordId": "w1435"
+   },
+   {
+    "tr": "aramak",
+    "kz": "қоңырау шалу; іздеу",
+    "wordId": "w901"
+   },
+   {
+    "tr": "çevirmeli",
+    "kz": "дискілі (айналдырмалы)",
+    "wordId": "w1874"
+   },
+   {
+    "tr": "cep telefonu",
+    "kz": "ұялы телефон",
+    "wordId": "w285"
+   },
+   {
+    "tr": "kesilmek",
+    "kz": "үзілу",
+    "wordId": "w1884"
+   },
+   {
+    "tr": "manyetolu",
+    "kz": "индукторлы (магнетолы)",
+    "wordId": "w1873"
+   },
+   {
+    "tr": "doldurmak",
+    "kz": "толтыру",
+    "wordId": "w575"
+   },
+   {
+    "tr": "yaymak",
+    "kz": "тарату",
+    "wordId": "w1920"
+   }
+  ]
+ },
+ {
+  "page": 147,
+  "unit": 7,
+  "items": [
+   {
+    "tr": "bilgisayar",
+    "kz": "компьютер",
+    "wordId": "w253"
+   },
+   {
+    "tr": "haberleşmek",
+    "kz": "хабарласу",
+    "wordId": "w1850"
+   },
+   {
+    "tr": "iletişim",
+    "kz": "байланыс, қарым-қатынас",
+    "wordId": "w251"
+   },
+   {
+    "tr": "davet etmek",
+    "kz": "шақыру",
+    "wordId": "w1964"
+   },
+   {
+    "tr": "internet sitesi",
+    "kz": "веб-сайт",
+    "wordId": "w1962"
+   },
+   {
+    "tr": "ziyaret etmek",
+    "kz": "кіру, бару",
+    "wordId": "w1963"
+   },
+   {
+    "tr": "iletişim kurmak",
+    "kz": "қарым-қатынас орнату",
+    "wordId": "w122"
+   },
+   {
+    "tr": "mikrofon",
+    "kz": "микрофон",
+    "wordId": "w2415"
+   },
+   {
+    "tr": "hızlı",
+    "kz": "жылдам",
+    "wordId": "w111"
+   },
+   {
+    "tr": "başvuru",
+    "kz": "өтініш беру / өтініш",
+    "wordId": "w1955"
+   },
+   {
+    "tr": "yavaş",
+    "kz": "баяу",
+    "wordId": "w1315"
+   },
+   {
+    "tr": "göndermek",
+    "kz": "жіберу",
+    "wordId": "w2416"
+   }
+  ]
+ },
+ {
+  "page": 152,
+  "unit": 7,
+  "items": [
+   {
+    "tr": "evlenmek",
+    "kz": "үйлену",
+    "wordId": "w1305"
+   },
+   {
+    "tr": "davetiye",
+    "kz": "шақыру билеті",
+    "wordId": "w1848"
+   },
+   {
+    "tr": "paylaşmak",
+    "kz": "бөлісу",
+    "wordId": "w2048"
+   },
+   {
+    "tr": "çağırmak",
+    "kz": "шақыру",
+    "wordId": "w1450"
+   },
+   {
+    "tr": "kutlamak",
+    "kz": "тойлау, құттықтау",
+    "wordId": "w1852"
+   },
+   {
+    "tr": "hediye almak",
+    "kz": "сыйлық алу",
+    "wordId": "w2417"
+   },
+   {
+    "tr": "davetli",
+    "kz": "шақырылған қонақ",
+    "wordId": "w1986"
+   },
+   {
+    "tr": "düğün",
+    "kz": "той",
+    "wordId": "w908"
+   },
+   {
+    "tr": "neşeli",
+    "kz": "көңілді",
+    "wordId": "w1565"
+   },
+   {
+    "tr": "kaygılı",
+    "kz": "алаңдаулы",
+    "wordId": "w2049"
+   },
+   {
+    "tr": "mutlu",
+    "kz": "бақытты",
+    "wordId": "w735"
+   },
+   {
+    "tr": "öfkeli",
+    "kz": "ашулы",
+    "wordId": "w2050"
+   }
+  ]
+ },
+ {
+  "page": 161,
+  "unit": 8,
+  "items": [
+   {
+    "tr": "peribacaları",
+    "kz": "пери мұржалары (Каппадокия)",
+    "wordId": "w2418"
+   },
+   {
+    "tr": "ailece",
+    "kz": "отбасымен",
+    "wordId": "w2140"
+   },
+   {
+    "tr": "Pamukkale",
+    "kz": "Памуккале (ақ травертиндер)",
+    "wordId": "w2146"
+   },
+   {
+    "tr": "hafta sonu",
+    "kz": "демалыс күндері (апта соңы)",
+    "wordId": "w264"
+   },
+   {
+    "tr": "pazar günü",
+    "kz": "жексенбі күні",
+    "wordId": "w923"
+   },
+   {
+    "tr": "seyahat",
+    "kz": "саяхат",
+    "wordId": "w1090"
+   },
+   {
+    "tr": "piknik",
+    "kz": "пикник",
+    "wordId": "w277"
+   },
+   {
+    "tr": "Kız Kulesi",
+    "kz": "Қыз мұнарасы (Стамбұл)",
+    "wordId": "w2147"
+   },
+   {
+    "tr": "baklava",
+    "kz": "пахлава",
+    "wordId": "w989"
+   },
+   {
+    "tr": "dağ yürüyüşü",
+    "kz": "тауда жаяу серуен",
+    "wordId": "w2419"
+   },
+   {
+    "tr": "balık tutmak",
+    "kz": "балық аулау",
+    "wordId": "w1561"
+   },
+   {
+    "tr": "eğlenmek",
+    "kz": "көңіл көтеру",
+    "wordId": "w1799"
+   }
+  ]
+ },
+ {
+  "page": 165,
+  "unit": 8,
+  "items": [
+   {
+    "tr": "köy",
+    "kz": "ауыл",
+    "wordId": "w1254"
+   },
+   {
+    "tr": "pansiyon",
+    "kz": "пансион (шағын қонақүй)",
+    "wordId": "w2198"
+   },
+   {
+    "tr": "otel",
+    "kz": "қонақүй",
+    "wordId": "w202"
+   },
+   {
+    "tr": "sağlık",
+    "kz": "денсаулық",
+    "wordId": "w141"
+   },
+   {
+    "tr": "sahil",
+    "kz": "жаға",
+    "wordId": "w1223"
+   },
+   {
+    "tr": "belde",
+    "kz": "шағын қала, кент",
+    "wordId": "w2200"
+   },
+   {
+    "tr": "havuz",
+    "kz": "бассейн",
+    "wordId": "w698"
+   },
+   {
+    "tr": "tatil",
+    "kz": "демалыс, каникул",
+    "wordId": "w263"
+   },
+   {
+    "tr": "yelkenli",
+    "kz": "желкенді қайық",
+    "wordId": "w2201"
+   },
+   {
+    "tr": "turist",
+    "kz": "турист",
+    "wordId": "w2174"
+   },
+   {
+    "tr": "kültür",
+    "kz": "мәдениет",
+    "wordId": "w71"
+   },
+   {
+    "tr": "turizm",
+    "kz": "туризм",
+    "wordId": "w2176"
+   }
+  ]
+ },
+ {
+  "page": 172,
+  "unit": 8,
+  "items": [
+   {
+    "tr": "bayramlaşmak",
+    "kz": "айттасу, мерекемен құттықтасу",
+    "wordId": "w1394"
+   },
+   {
+    "tr": "cami",
+    "kz": "мешіт",
+    "wordId": "w1385"
+   },
+   {
+    "tr": "gümüş",
+    "kz": "күміс",
+    "wordId": "w1019"
+   },
+   {
+    "tr": "bayram",
+    "kz": "мейрам",
+    "wordId": "w266"
+   },
+   {
+    "tr": "hediye",
+    "kz": "сыйлық",
+    "wordId": "w1307"
+   },
+   {
+    "tr": "harçlık",
+    "kz": "қалта ақша, айт ақшасы",
+    "wordId": "w2254"
+   },
+   {
+    "tr": "diyet",
+    "kz": "диета",
+    "wordId": "w2207"
+   },
+   {
+    "tr": "ailece",
+    "kz": "отбасымен",
+    "wordId": "w2140"
+   },
+   {
+    "tr": "şeker",
+    "kz": "қант",
+    "wordId": "w395"
+   },
+   {
+    "tr": "ziyaret",
+    "kz": "қонаққа бару / маған қонаққа келу",
+    "wordId": "w1390"
+   },
+   {
+    "tr": "tatlı",
+    "kz": "тәтті тағам",
+    "wordId": "w1285"
+   },
+   {
+    "tr": "kutlama",
+    "kz": "тойлау, құттықтау",
+    "wordId": "w2420"
+   }
+  ]
+ }
+]

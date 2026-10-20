@@ -1,0 +1,264 @@
+[
+ {
+  "id": 0,
+  "slug": "giris",
+  "tr": "Giriş",
+  "kz": "Кіріспе",
+  "from": 1,
+  "to": 8,
+  "sections": [],
+  "grammar": []
+ },
+ {
+  "id": 1,
+  "slug": "tanisma",
+  "tr": "Tanışma",
+  "kz": "Танысу",
+  "from": 9,
+  "to": 32,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Merhaba",
+    "start": 10
+   },
+   {
+    "code": "B",
+    "title": "Nerelisiniz?",
+    "start": 17
+   },
+   {
+    "code": "C",
+    "title": "Karşılaşma – Selamlaşma",
+    "start": 25
+   }
+  ],
+  "grammar": [
+   "bu / şu / o; burası / şurası / orası",
+   "mı? / değil",
+   "var / yok",
+   "Bulunma hâli (-DA)",
+   "Sayılar",
+   "Çokluk eki (-lAr)"
+  ]
+ },
+ {
+  "id": 2,
+  "slug": "ailemiz",
+  "tr": "Ailemiz",
+  "kz": "Біздің отбасы",
+  "from": 33,
+  "to": 54,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Ailem ve Ben",
+    "start": 34
+   },
+   {
+    "code": "B",
+    "title": "Evim",
+    "start": 39
+   },
+   {
+    "code": "C",
+    "title": "Adresim",
+    "start": 49
+   }
+  ],
+  "grammar": [
+   "Ayrılma, belirtme, bulunma, yönelme hâlleri",
+   "-DAn önce / -DAn sonra",
+   "Emir",
+   "Şahıs zamirleri",
+   "Şimdiki zaman (-Iyor)"
+  ]
+ },
+ {
+  "id": 3,
+  "slug": "gunluk-hayat",
+  "tr": "Günlük Hayat",
+  "kz": "Күнделікті өмір",
+  "from": 55,
+  "to": 76,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Saat Kaçta?",
+    "start": 56
+   },
+   {
+    "code": "B",
+    "title": "Ne Kadar? Kaç Lira?",
+    "start": 64
+   },
+   {
+    "code": "C",
+    "title": "Nerede? Ne Zaman?",
+    "start": 70
+   }
+  ],
+  "grammar": [
+   "Belirli geçmiş zaman (-DI)",
+   "Zaman zarfları",
+   "-ile / -(y)lA",
+   "-lI, -sIz, -lIk"
+  ]
+ },
+ {
+  "id": 4,
+  "slug": "cevremiz",
+  "tr": "Çevremiz",
+  "kz": "Айналамыз",
+  "from": 77,
+  "to": 96,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Bizim Sokağımız",
+    "start": 78
+   },
+   {
+    "code": "B",
+    "title": "Ne? Nerede?",
+    "start": 84
+   },
+   {
+    "code": "C",
+    "title": "Bir Haftalık Planımız",
+    "start": 89
+   }
+  ],
+  "grammar": [
+   "İyelik ekleri",
+   "-DAn ... -(y)A kadar",
+   "Gelecek zaman (-(y)AcAk)"
+  ]
+ },
+ {
+  "id": 5,
+  "slug": "meslekler",
+  "tr": "Meslekler",
+  "kz": "Мамандықтар",
+  "from": 97,
+  "to": 116,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Meslekleri Tanıyalım",
+    "start": 98
+   },
+   {
+    "code": "B",
+    "title": "Ne Olmak İstiyorsun?",
+    "start": 105
+   },
+   {
+    "code": "C",
+    "title": "Hobilerim",
+    "start": 111
+   }
+  ],
+  "grammar": [
+   "İsim tamlamaları"
+  ]
+ },
+ {
+  "id": 6,
+  "slug": "ulasim",
+  "tr": "Ulaşım",
+  "kz": "Көлік",
+  "from": 117,
+  "to": 136,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Yolculuk Nereye?",
+    "start": 118
+   },
+   {
+    "code": "B",
+    "title": "Trafikte",
+    "start": 124
+   },
+   {
+    "code": "C",
+    "title": "Bugün Hava Nasıl?",
+    "start": 128
+   }
+  ],
+  "grammar": [
+   "-ki / -DAki",
+   "-(I)ncI (sıra sayıları)"
+  ]
+ },
+ {
+  "id": 7,
+  "slug": "iletisim",
+  "tr": "İletişim",
+  "kz": "Байланыс",
+  "from": 137,
+  "to": 154,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Telefon",
+    "start": 138
+   },
+   {
+    "code": "B",
+    "title": "Bilgisayar ve İnternet",
+    "start": 144
+   },
+   {
+    "code": "C",
+    "title": "Yüz Yüze",
+    "start": 148
+   }
+  ],
+  "grammar": [
+   "-A göre, bence",
+   "-DAn daha + sıfat",
+   "en + sıfat",
+   "-DAn beri / -DIr"
+  ]
+ },
+ {
+  "id": 8,
+  "slug": "tatil",
+  "tr": "Tatil",
+  "kz": "Демалыс",
+  "from": 155,
+  "to": 174,
+  "sections": [
+   {
+    "code": "A",
+    "title": "Hafta Sonu",
+    "start": 156
+   },
+   {
+    "code": "B",
+    "title": "Yaz Tatili",
+    "start": 162
+   },
+   {
+    "code": "C",
+    "title": "Bayram",
+    "start": 166
+   }
+  ],
+  "grammar": [
+   "Genel tekrar"
+  ]
+ },
+ {
+  "id": 9,
+  "slug": "ekler",
+  "tr": "Ekler",
+  "kz": "Қосымшалар",
+  "from": 175,
+  "to": 192,
+  "sections": [],
+  "grammar": []
+ }
+]

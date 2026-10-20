@@ -1,0 +1,25 @@
+{
+  "_note": "Platform-authored Kazakh glosses for Kelime Dünyası items that the page analysis did not translate. Source label: supplement.",
+  "words": [
+    { "tr": "Sizi tanıştırayım", "kz": "Сізді таныстырайын", "page": 16 },
+    { "tr": "Ben de memnun oldum", "kz": "Мен де қуаныштымын", "page": 16 },
+    { "tr": "Ben de iyiyim", "kz": "Мен де жақсымын", "page": 16 },
+    { "tr": "Saat kaç?", "kz": "Сағат неше?", "page": 63 },
+    { "tr": "Kaça?", "kz": "Қанша тұрады?", "page": 69 },
+    { "tr": "Kaç kilo?", "kz": "Неше келі?", "page": 69 },
+    { "tr": "hesap", "kz": "есеп, шот (мейрамханада)", "page": 94 },
+    { "tr": "ödemek", "kz": "төлеу", "page": 94 },
+    { "tr": "muayene", "kz": "дәрігерлік қарау", "page": 110 },
+    { "tr": "bisiklete binmek", "kz": "велосипед тебу", "page": 114 },
+    { "tr": "rötar", "kz": "рейстің кешігуі", "page": 123 },
+    { "tr": "kabin", "kz": "кабина, салон", "page": 123 },
+    { "tr": "çıkış kapısı", "kz": "шығу есігі", "page": 123 },
+    { "tr": "motosiklet", "kz": "мотоцикл", "page": 127 },
+    { "tr": "mikrofon", "kz": "микрофон", "page": 147 },
+    { "tr": "göndermek", "kz": "жіберу", "page": 147 },
+    { "tr": "hediye almak", "kz": "сыйлық алу", "page": 152 },
+    { "tr": "peribacaları", "kz": "пери мұржалары (Каппадокия)", "page": 161 },
+    { "tr": "dağ yürüyüşü", "kz": "тауда жаяу серуен", "page": 161 },
+    { "tr": "kutlama", "kz": "тойлау, құттықтау", "page": 172 }
+  ]
+}
