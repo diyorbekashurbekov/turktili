@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@google/genai": "^2.30.0",
+    "@libsql/client": "^0.18.0",
+    "@vercel/blob": "^2.8.2",
     "lucide-react": "0.468.0",
     "motion": "12.23.12",
     "next": "15.5.28",

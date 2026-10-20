@@ -6,6 +6,8 @@ import { getPage, pageDigest, searchPages, unitOfPage } from "@/content";
 import { q } from "@/lib/db";
 
 export const runtime = "nodejs";
+// Gemini calls (and retry waits when rate-limited) can take tens of seconds
+export const maxDuration = 60;
 
 const Body = z.object({
   page: z.number().int().min(1).max(192).nullable().optional(),
@@ -25,8 +27,8 @@ const MODE_HINT: Record<string, string> = {
   mistakes: "The student shares mistakes from their practice. Explain each mistake briefly in Kazakh and give one corrected example.",
 };
 
-function recentMistakes(userId: string) {
-  return q.all<{ skill: string; item_id: string; given: string | null }>(
+async function recentMistakes(userId: string) {
+  return await q.all<{ skill: string; item_id: string; given: string | null }>(
     "SELECT skill, item_id, given FROM attempts WHERE user_id = ? AND correct = 0 AND resolved = 0 ORDER BY id DESC LIMIT 8",
     userId,
   );
@@ -38,7 +40,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return Response.json({ error: "Сұрау пішімі қате." }, { status: 400 });
   const { page, mode, messages } = parsed.data;
 
-  const g = guard(user, "chat");
+  const g = await guard(user, "chat");
   if (!g.ok) return Response.json({ error: g.message, code: g.code }, { status: g.status });
 
   const last = messages[messages.length - 1].content;
@@ -49,9 +51,9 @@ export async function POST(req: Request) {
   if (mentioned && +mentioned[1] >= 1 && +mentioned[1] <= 192) pagesToUse.add(+mentioned[1]);
   if (pagesToUse.size < 2) for (const n of searchPages(last, 1, page ?? undefined)) pagesToUse.add(n);
 
-  const contextParts = [...pagesToUse].map((n, i) => (i === 0 ? pageDigest(n, 7000) : pageDigest(n, 2500)));
-  const open = page ? getPage(page) : null;
-  const mistakes = mode === "mistakes" || mode === "free" ? recentMistakes(user.id) : [];
+  const contextParts = await Promise.all([...pagesToUse].map((n, i) => pageDigest(n, i === 0 ? 7000 : 2500)));
+  const open = page ? await getPage(page) : null;
+  const mistakes = mode === "mistakes" || mode === "free" ? await recentMistakes(user.id) : [];
   const context = [
     open ? `The student currently has page ${open.n} open (Ünite ${unitOfPage(open.n).id}).` : "The student has no textbook page open.",
     MODE_HINT[mode],
@@ -83,9 +85,9 @@ export async function POST(req: Request) {
         }
         if (finish === "MAX_TOKENS") controller.enqueue(encoder.encode("\n\n_…жауап қысқартылды._"));
         if (finish === "SAFETY" || finish === "PROHIBITED_CONTENT") controller.enqueue(encoder.encode("\n\n_Бұл сұраққа жауап бере алмаймын._"));
-        logUsage(user, "chat", model, usage);
+        await logUsage(user, "chat", model, usage);
       } catch (err) {
-        logUsage(user, "chat", model, null, err);
+        await logUsage(user, "chat", model, null, err);
         controller.enqueue(encoder.encode(`\n\n⚠️ ${friendlyAiError(err)}`));
       } finally {
         controller.close();

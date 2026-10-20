@@ -28,6 +28,16 @@ Requires **Node ≥ 22.13** for the built-in `node:sqlite`. Development and test
 3. Variables: `GEMINI_API_KEY` (required for AI), `ADMIN_EMAILS`, optionally `AI_DAILY_BUDGET_USD`, `GEMINI_TEXT_MODEL`, `GEMINI_TTS_MODEL`.
 4. Settings → Networking → Generate Domain. Every push to `main` redeploys.
 
+## Deploy on Vercel (live: turktili-two.vercel.app)
+
+On Vercel every route is a separate serverless function with its own temporary disk, so a local SQLite file is **not shared** between routes. An exam created by `/api/exams` was invisible to `/sinav/[id]` (404), and progress, accounts and history were similarly broken. Production therefore uses:
+
+- **Turso (libSQL)** for the database (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`). `src/lib/db.ts` has one async API (`q.get/all/run`) with two backends: libSQL when the URL is set, built-in `node:sqlite` otherwise. Same SQL, schema created on first connection.
+- **Vercel Blob (private store)** for the TTS cache and uploaded book audio (`src/lib/storage.ts`, `BLOB_READ_WRITE_TOKEN`). Files are streamed through `/api/tts` and `/api/audio/[id]`, so book audio never gets a public URL. Admin uploads go straight from the browser to Blob (`/api/admin/upload` issues the token after an admin check) because function request bodies are capped at 4.5 MB.
+- AI and TTS routes set `maxDuration = 60`.
+
+Not available on Vercel: original page scans (`BOOK_PAGES_DIR` is a local folder; keep it off). Burst rate limits and the TTS request queue are per function instance; daily quotas and the budget are shared through the database.
+
 ## Architecture decisions
 
 | Area | Decision | Why |

@@ -2,6 +2,8 @@ import { currentUser } from "@/lib/auth";
 import { friendlyAiError, generate, guard, logUsage } from "@/lib/ai";
 
 export const runtime = "nodejs";
+// Gemini calls (and retry waits when rate-limited) can take tens of seconds
+export const maxDuration = 60;
 
 const MAX_BYTES = 6 * 1024 * 1024;
 
@@ -13,7 +15,7 @@ export async function POST(req: Request) {
   const lang = form?.get("lang") === "kk-KZ" ? "kk-KZ" : "tr-TR";
   if (!(audio instanceof Blob) || audio.size < 500 || audio.size > MAX_BYTES) return Response.json({ error: "Аудио жоқ немесе тым үлкен." }, { status: 400 });
 
-  const g = guard(user, "transcribe");
+  const g = await guard(user, "transcribe");
   if (!g.ok) return Response.json({ error: g.message, code: g.code }, { status: g.status });
   try {
     const { res, model } = await generate(g.textModel, {
@@ -33,10 +35,10 @@ export async function POST(req: Request) {
       ],
       config: {},
     }, "fast");
-    logUsage(user, "transcribe", model, res.usageMetadata ?? null);
+    await logUsage(user, "transcribe", model, res.usageMetadata ?? null);
     return Response.json({ text: (res.text ?? "").trim() });
   } catch (err) {
-    logUsage(user, "transcribe", g.textModel, null, err);
+    await logUsage(user, "transcribe", g.textModel, null, err);
     return Response.json({ error: friendlyAiError(err) }, { status: 502 });
   }
 }

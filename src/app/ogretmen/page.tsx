@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Öğretmen" };
 
 export default async function Teacher() {
   const user = await currentUser();
-  const last = user.last_page ? getPage(user.last_page) : null;
+  const last = user.last_page ? await getPage(user.last_page) : null;
   return (
     <>
       <TopBar userLabel={isGuest(user) ? "Қонақ" : (user.name ?? "")} />

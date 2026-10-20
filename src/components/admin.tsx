@@ -289,7 +289,8 @@ export function UserRow({ user }: { user: { id: string; email: string | null; na
   );
 }
 
-export function AudioUpload() {
+/** `direct`: upload straight to Vercel Blob (serverless request bodies are capped at 4.5 MB). */
+export function AudioUpload({ direct = false }: { direct?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -298,15 +299,39 @@ export function AudioUpload() {
       className="card space-y-3 p-6"
       onSubmit={async (e) => {
         e.preventDefault();
+        const form = e.currentTarget;
         setBusy(true);
         setMsg(null);
-        const fd = new FormData(e.currentTarget);
-        const res = await fetch("/api/admin", { method: "POST", body: fd });
-        const d = await res.json().catch(() => ({}));
+        const fd = new FormData(form);
+        let ok = false;
+        let error = "Қате";
+        try {
+          if (direct) {
+            const file = fd.get("file") as File;
+            const ext = (/\.(mp3|m4a|ogg|wav)$/i.exec(file.name)?.[0] ?? "").toLowerCase();
+            if (!ext || file.size > 30 * 1024 * 1024) throw new Error("mp3/m4a/ogg/wav, 30 МБ дейін.");
+            const page = Number(fd.get("page"));
+            const { upload } = await import("@vercel/blob/client");
+            const blob = await upload(`audio/${page}${ext}`, file, { access: "private", handleUploadUrl: "/api/admin/upload" });
+            const res = await fetch("/api/admin", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "audio-register", page, title: String(fd.get("title") || "").slice(0, 120), key: blob.pathname }),
+            });
+            ok = res.ok;
+            if (!ok) error = (await res.json().catch(() => ({}))).error || error;
+          } else {
+            const res = await fetch("/api/admin", { method: "POST", body: fd });
+            ok = res.ok;
+            if (!ok) error = (await res.json().catch(() => ({}))).error || error;
+          }
+        } catch (err) {
+          error = err instanceof Error ? err.message : error;
+        }
         setBusy(false);
-        setMsg(res.ok ? "Жүктелді" : d.error || "Қате");
-        if (res.ok) {
-          (e.target as HTMLFormElement).reset();
+        setMsg(ok ? "Жүктелді" : error);
+        if (ok) {
+          form.reset();
           router.refresh();
         }
       }}

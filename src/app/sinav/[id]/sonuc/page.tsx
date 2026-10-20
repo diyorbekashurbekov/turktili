@@ -18,10 +18,11 @@ const SKILL_KZ: Record<string, string> = { okuma: "Оқу", dinleme: "Тыңда
 export default async function Result({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
   const user = await currentUser();
-  const row = q.get<{ type: ExamType; result: string | null; finished_at: string | null }>("SELECT type, result, finished_at FROM exams WHERE id = ? AND user_id = ?", id, user.id);
+  const row = await q.get<{ type: ExamType; result: string | null; finished_at: string | null }>("SELECT type, result, finished_at FROM exams WHERE id = ? AND user_id = ?", id, user.id);
   if (!row) notFound();
   if (!row.finished_at || !row.result) redirect(`/sinav/${id}`);
   const r = JSON.parse(row.result) as ExamResult;
+  const recTitles = new Map(await Promise.all(r.recommendedPages.map(async (p) => [p, (await getPage(p))?.title ?? ""] as const)));
   const pct = r.score.total ? Math.round((r.score.correct / r.score.total) * 100) : null;
   const wrong = r.items.filter((i) => !i.correct);
   const wf = r.writing?.feedback as WritingFeedback | null | undefined;
@@ -81,7 +82,7 @@ export default async function Result({ params }: { params: Promise<{ id: string 
           <div className="mt-4 flex flex-wrap gap-2">
             {r.recommendedPages.map((p) => (
               <Link key={p} href={`/kitap/${p}`} className="chip hover:border-teal hover:text-teal">
-                {p}-бет · {getPage(p)?.title.slice(0, 28)}
+                {p}-бет · {recTitles.get(p)?.slice(0, 28)}
               </Link>
             ))}
           </div>

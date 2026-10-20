@@ -214,6 +214,22 @@ await step("admin area is protected and works for admins", async () => {
   assert.match((await s.html("/kitap/12")).text, /Tanıştırma \(edited\)/);
   await admin.json("/api/admin", { action: "page-override-clear", page: 12, field: "title" });
   assert.doesNotMatch((await s.html("/kitap/12")).text, /\(edited\)/);
+
+  // authorised audio: upload → listed on the page → played back byte-for-byte → deleted
+  const wav = Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(2000, 7)]);
+  const fd = new FormData();
+  fd.append("page", "12");
+  fd.append("title", `e2e audio ${stamp}`);
+  fd.append("file", new Blob([wav], { type: "audio/wav" }), "clip.wav");
+  assert.equal((await admin.req("/api/admin", { method: "POST", body: fd })).status, 200);
+  const audioPage = (await admin.html("/admin?tab=ses")).text;
+  const audioId = Number(new RegExp(`/api/audio/(\\d+)[^]*?e2e audio ${stamp}|e2e audio ${stamp}[^]*?/api/audio/(\\d+)`).exec(audioPage)?.slice(1).find(Boolean));
+  assert.ok(audioId, "uploaded audio is listed");
+  const played = await s.req(`/api/audio/${audioId}`);
+  assert.equal(played.status, 200);
+  assert.ok(Buffer.from(await played.arrayBuffer()).equals(wav), "audio bytes round-trip through storage");
+  assert.equal((await admin.json("/api/admin", { action: "audio-delete", id: audioId })).status, 200);
+  assert.equal((await s.req(`/api/audio/${audioId}`)).status, 404);
 });
 
 await step("original page images are withheld unless rights are confirmed", async () => {

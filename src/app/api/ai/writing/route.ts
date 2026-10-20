@@ -6,6 +6,8 @@ import { PRACTICE } from "@/content/practice";
 import { pageDigest } from "@/content";
 
 export const runtime = "nodejs";
+// Gemini calls (and retry waits when rate-limited) can take tens of seconds
+export const maxDuration = 60;
 
 const Body = z.object({
   promptId: z.string().max(40),
@@ -66,10 +68,10 @@ export async function POST(req: Request) {
   const task = PRACTICE.flatMap((p) => p.writing.map((w) => ({ ...w, unit: p.unit }))).find((w) => w.id === promptId);
   if (!task) return Response.json({ error: "Тапсырма табылмады." }, { status: 404 });
 
-  const g = guard(user, "writing");
+  const g = await guard(user, "writing");
   if (!g.ok) {
     // keep the student's work even when AI is unavailable
-    q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,NULL)", user.id, promptId, text);
+    await q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,NULL)", user.id, promptId, text);
     return Response.json({ error: g.message, code: g.code, saved: true }, { status: g.status });
   }
 
@@ -84,7 +86,7 @@ export async function POST(req: Request) {
 Focus: ${task.focus}. Expected: at least ${task.minSentences} sentences.
 
 Relevant textbook context:
-${pageDigest(task.pages[0], 2500)}
+${await pageDigest(task.pages[0], 2500)}
 
 STUDENT TEXT:
 ${text}`,
@@ -94,14 +96,14 @@ ${text}`,
       ],
       config: { systemInstruction: SYSTEM, responseMimeType: "application/json", responseJsonSchema: WRITING_SCHEMA, maxOutputTokens: 4000 },
     });
-    logUsage(user, "writing", model, res.usageMetadata ?? null);
+    await logUsage(user, "writing", model, res.usageMetadata ?? null);
     const feedback = JSON.parse(res.text ?? "null");
     if (!feedback?.corrected_text) throw new Error("Empty feedback");
-    const info = q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,?)", user.id, promptId, text, JSON.stringify(feedback));
+    const info = await q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,?)", user.id, promptId, text, JSON.stringify(feedback));
     return Response.json({ id: Number(info.lastInsertRowid), feedback, pages: task.pages });
   } catch (err) {
-    logUsage(user, "writing", g.textModel, null, err);
-    q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,NULL)", user.id, promptId, text);
+    await logUsage(user, "writing", g.textModel, null, err);
+    await q.run("INSERT INTO writings (user_id, prompt_id, text, feedback) VALUES (?,?,?,NULL)", user.id, promptId, text);
     return Response.json({ error: friendlyAiError(err), saved: true }, { status: 502 });
   }
 }

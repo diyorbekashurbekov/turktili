@@ -14,13 +14,13 @@ const SKILL_KZ: Record<string, string> = { okuma: "Оқу", dinleme: "Тыңда
 
 export default async function Mistakes() {
   const user = await currentUser();
-  const rows = q.all<{ id: number; skill: string; unit: number | null; item_id: string; given: string | null; created_at: string }>(
+  const rows = await q.all<{ id: number; skill: string; unit: number | null; item_id: string; given: string | null; created_at: string }>(
     "SELECT id, skill, unit, item_id, given, created_at FROM attempts WHERE user_id = ? AND correct = 0 AND resolved = 0 ORDER BY id DESC LIMIT 80",
     user.id,
   );
   const questions = new Map(PRACTICE.flatMap((p) => [...p.reading.questions, ...p.listening.questions, ...p.grammar].map((qq) => [qq.id, { qq, unit: p.unit }] as const)));
   const dict = new Map<string, string>(PRACTICE.flatMap((p) => p.listening.dictation.map((s, i) => [`u${p.unit}d${i}`, s] as const)));
-  const words = new Map(vocab().map((w) => [w.id, w]));
+  const words = new Map((await vocab()).map((w) => [w.id, w]));
   // one card per item (latest attempt)
   const seen = new Set<string>();
   const items = rows.filter((r) => (seen.has(r.item_id) ? false : (seen.add(r.item_id), true)));

@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Емтихан" };
 export default async function ExamPage({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
   const user = await currentUser();
-  const row = q.get<{ config: string; finished_at: string | null; started_at: string }>("SELECT config, finished_at, started_at FROM exams WHERE id = ? AND user_id = ?", id, user.id);
+  const row = await q.get<{ config: string; finished_at: string | null; started_at: string }>("SELECT config, finished_at, started_at FROM exams WHERE id = ? AND user_id = ?", id, user.id);
   if (!row) notFound();
   if (row.finished_at) redirect(`/sinav/${id}/sonuc`);
   const plan = JSON.parse(row.config) as ExamPlan;

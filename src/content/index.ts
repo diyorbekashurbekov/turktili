@@ -17,8 +17,24 @@ export const TOTAL_PAGES = 192;
 /** Lesson units (1–8); 0 is front matter and 9 the appendix. */
 export const LESSON_UNITS = UNITS.filter((u) => u.id >= 1 && u.id <= 8);
 
-function applyOverrides(p: BookPage): BookPage {
-  const rows = q.all<{ field: string; value: string }>("SELECT field, value FROM content_overrides WHERE page = ?", p.n);
+// admin page edits, cached briefly (one query instead of one per page view; matters with a remote database)
+let overrideCache: { at: number; byPage: Map<number, { field: string; value: string }[]> } | null = null;
+async function overridesFor(n: number) {
+  if (!overrideCache || Date.now() - overrideCache.at > 10_000) {
+    const all = await q.all<{ page: number; field: string; value: string }>("SELECT page, field, value FROM content_overrides");
+    const byPage = new Map<number, { field: string; value: string }[]>();
+    for (const r of all) byPage.set(r.page, [...(byPage.get(r.page) ?? []), r]);
+    overrideCache = { at: Date.now(), byPage };
+  }
+  return overrideCache.byPage.get(n) ?? [];
+}
+
+export function invalidateOverrides() {
+  overrideCache = null;
+}
+
+async function applyOverrides(p: BookPage): Promise<BookPage> {
+  const rows = await overridesFor(p.n);
   if (!rows.length) return p;
   const copy: BookPage = { ...p, blocks: [...p.blocks] };
   for (const r of rows) {
@@ -35,7 +51,7 @@ function applyOverrides(p: BookPage): BookPage {
   return copy;
 }
 
-export function getPage(n: number): BookPage | null {
+export async function getPage(n: number): Promise<BookPage | null> {
   const p = PAGES.find((x) => x.n === n);
   if (!p) return null;
   // multi-page sections store their content on the first page
@@ -64,9 +80,9 @@ export function unitOfPage(n: number) {
 }
 
 let vocabCache: { at: number; words: Word[] } | null = null;
-export function vocab(): Word[] {
+export async function vocab(): Promise<Word[]> {
   if (vocabCache && Date.now() - vocabCache.at < 10_000) return vocabCache.words;
-  const ov = q.all<{ word_id: string; tr: string; kz: string }>("SELECT word_id, tr, kz FROM vocab_overrides");
+  const ov = await q.all<{ word_id: string; tr: string; kz: string }>("SELECT word_id, tr, kz FROM vocab_overrides");
   const map = new Map(ov.map((o) => [o.word_id, o]));
   const words = VOCAB.map((w) => (map.has(w.id) ? { ...w, tr: map.get(w.id)!.tr, kz: map.get(w.id)!.kz } : w));
   vocabCache = { at: Date.now(), words };
@@ -77,13 +93,13 @@ export function invalidateVocab() {
   vocabCache = null;
 }
 
-export function wordsForPage(n: number) {
-  return vocab().filter((w) => w.pages.includes(n) && w.source !== "index");
+export async function wordsForPage(n: number) {
+  return (await vocab()).filter((w) => w.pages.includes(n) && w.source !== "index");
 }
 
 /** Kelime Dünyası words + every word introduced on lesson pages of the unit. */
-export function wordsForUnit(unit: number, onlyKelime = false) {
-  const words = vocab();
+export async function wordsForUnit(unit: number, onlyKelime = false) {
+  const words = await vocab();
   const kelimeIds = new Set(KELIME.filter((k) => k.unit === unit).flatMap((k) => k.items.map((i) => i.wordId).filter(Boolean)));
   if (onlyKelime) return words.filter((w) => kelimeIds.has(w.id));
   return words.filter((w) => w.unit === unit && w.source !== "index");
@@ -94,8 +110,8 @@ export function kelimeWordIds(): Set<string> {
 }
 
 /** Plain-text digest of a page for AI grounding (bounded length). */
-export function pageDigest(n: number, maxChars = 6000) {
-  const p = getPage(n);
+export async function pageDigest(n: number, maxChars = 6000) {
+  const p = await getPage(n);
   if (!p) return "";
   const u = unitOfPage(n);
   const parts = [

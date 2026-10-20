@@ -7,8 +7,9 @@ export type SessionWord = { id: string; tr: string; kz: string; page: number; op
 
 type State = { word_id: string; due_at: string | null; interval_days: number; saved: number; reps: number };
 
-function states(userId: string) {
-  return new Map(q.all<State>("SELECT word_id, due_at, interval_days, saved, reps FROM vocab_state WHERE user_id = ?", userId).map((s) => [s.word_id, s]));
+async function states(userId: string) {
+  const rows = await q.all<State>("SELECT word_id, due_at, interval_days, saved, reps FROM vocab_state WHERE user_id = ?", userId);
+  return new Map(rows.map((s) => [s.word_id, s]));
 }
 
 const usable = (w: Word) => w.tr.length <= 40 && w.kz.length <= 70 && !/^\d/.test(w.tr);
@@ -25,17 +26,18 @@ function shuffle<T>(a: T[], seed = Date.now()) {
 }
 
 /** Picks words for a study session: due first, then new Kelime Dünyası words, then other unit words. */
-export function buildSession(userId: string, set: string, size = 12): SessionWord[] {
-  const st = states(userId);
+export async function buildSession(userId: string, set: string, size = 12): Promise<SessionWord[]> {
+  const [st, words] = await Promise.all([states(userId), await vocab()]);
   const now = new Date().toISOString();
-  const all = vocab().filter(usable);
+  const all = words.filter(usable);
+  const unitWords = set.startsWith("unit:") ? await wordsForUnit(Number(set.slice(5))) : [];
   let pool: Word[];
   if (set === "due") pool = all.filter((w) => (st.get(w.id)?.due_at ?? "9") <= now && (st.get(w.id)?.reps ?? 0) > 0);
   else if (set === "saved") pool = all.filter((w) => st.get(w.id)?.saved);
   else if (set.startsWith("unit:")) {
     const unit = Number(set.slice(5));
-    const kelime = wordsForUnit(unit, true).filter(usable);
-    const rest = wordsForUnit(unit).filter(usable).filter((w) => !kelime.includes(w));
+    const kelime = (await wordsForUnit(unit, true)).filter(usable);
+    const rest = unitWords.filter(usable).filter((w) => !kelime.includes(w));
     const rank = (w: Word) => {
       const s = st.get(w.id);
       if (s?.due_at && s.due_at <= now) return 0; // due
@@ -51,7 +53,7 @@ export function buildSession(userId: string, set: string, size = 12): SessionWor
   } else pool = [];
 
   const picked = set.startsWith("unit:") ? pool.slice(0, size) : shuffle(pool).slice(0, size);
-  const distractorPool = set.startsWith("unit:") ? wordsForUnit(Number(set.slice(5))).filter(usable) : all;
+  const distractorPool = set.startsWith("unit:") ? unitWords.filter(usable) : all;
   return shuffle(picked).map((w, i) => {
     const others = shuffle(distractorPool.filter((d) => d.id !== w.id && d.kz !== w.kz && d.tr !== w.tr), i + 7).slice(0, 3);
     const options = shuffle([w, ...others], i + 3).map((o) => ({ tr: o.tr, kz: o.kz }));
@@ -59,11 +61,12 @@ export function buildSession(userId: string, set: string, size = 12): SessionWor
   });
 }
 
-export function unitVocabStats(userId: string) {
-  const st = states(userId);
-  return [1, 2, 3, 4, 5, 6, 7, 8].map((u) => {
-    const kelime = wordsForUnit(u, true);
-    const words = wordsForUnit(u);
+export async function unitVocabStats(userId: string) {
+  const st = await states(userId);
+  const units = [1, 2, 3, 4, 5, 6, 7, 8];
+  const lists = await Promise.all(units.map(async (u) => [await wordsForUnit(u, true), await wordsForUnit(u)] as const));
+  return units.map((u, i) => {
+    const [kelime, words] = lists[i];
     const ids = new Set([...kelime, ...words].map((w) => w.id));
     let seen = 0;
     let mastered = 0;
@@ -76,11 +79,12 @@ export function unitVocabStats(userId: string) {
   });
 }
 
-export function dueCount(userId: string) {
-  return q.get<{ c: number }>("SELECT COUNT(*) AS c FROM vocab_state WHERE user_id = ? AND reps > 0 AND due_at <= ?", userId, new Date().toISOString())?.c ?? 0;
+export async function dueCount(userId: string) {
+  return (await q.get<{ c: number }>("SELECT COUNT(*) AS c FROM vocab_state WHERE user_id = ? AND reps > 0 AND due_at <= ?", userId, new Date().toISOString()))?.c ?? 0;
 }
 
-export function savedWords(userId: string) {
-  const ids = new Set(q.all<{ word_id: string }>("SELECT word_id FROM vocab_state WHERE user_id = ? AND saved = 1", userId).map((r) => r.word_id));
-  return vocab().filter((w) => ids.has(w.id));
+export async function savedWords(userId: string) {
+  const rows = await q.all<{ word_id: string }>("SELECT word_id FROM vocab_state WHERE user_id = ? AND saved = 1", userId);
+  const ids = new Set(rows.map((r) => r.word_id));
+  return (await vocab()).filter((w) => ids.has(w.id));
 }

@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const raw = (url.searchParams.get("q") || "").trim();
   if (!raw || raw.length > 60) return Response.json({ matches: [] });
   const term = raw.toLocaleLowerCase("tr").replace(/[.,!?;:«»"“”()]/g, "");
-  const words = vocab();
+  const words = await vocab();
   const clean = (s: string) => s.toLocaleLowerCase("tr").replace(/\s*\([^)]*\)/g, "").replace(/[!?.]+$/, "").trim();
   let matches = words.filter((w) => clean(w.tr) === term || clean(w.tr).split(" / ").includes(term));
   if (!matches.length && term.length >= 4) {
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
   }
   const user = await currentUser();
   const saved = new Set(
-    q.all<{ word_id: string }>("SELECT word_id FROM vocab_state WHERE user_id = ? AND saved = 1", user.id).map((r) => r.word_id),
+    (await q.all<{ word_id: string }>("SELECT word_id FROM vocab_state WHERE user_id = ? AND saved = 1", user.id)).map((r) => r.word_id),
   );
   return Response.json({
     matches: matches.slice(0, 3).map((w) => ({ id: w.id, tr: w.tr, kz: w.kz, page: w.page, source: w.source, saved: saved.has(w.id) })),

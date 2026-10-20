@@ -6,6 +6,7 @@ import { aiConfigured, todaySpendUsd } from "@/lib/ai";
 import { getSettings, TEXT_MODELS, TTS_MODELS } from "@/lib/settings";
 import { COVERAGE, getPage, vocab } from "@/content";
 import { PageShell } from "@/components/shell";
+import { blobEnabled } from "@/lib/storage";
 import { AdminSettings, ExamSettings, PageEditor, VocabEditor, UserRow, AudioUpload, AudioDelete, ClearErrors } from "@/components/admin";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +35,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     );
   const sp = await searchParams;
   const tab = TABS.some(([k]) => k === sp.tab) ? sp.tab! : "genel";
-  const s = getSettings();
+  const s = await getSettings();
 
   return (
     <PageShell userLabel={user.name ?? ""} wide>
@@ -68,17 +69,17 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   );
 }
 
-function Overview() {
-  const users = q.get<{ c: number; m: number }>("SELECT COUNT(*) AS c, SUM(email IS NOT NULL) AS m FROM users")!;
-  const active = q.get<{ c: number }>("SELECT COUNT(DISTINCT user_id) AS c FROM page_progress WHERE updated_at >= datetime('now','-7 days')")!.c;
-  const errors = q.get<{ c: number }>("SELECT COUNT(*) AS c FROM error_log")!.c;
+async function Overview() {
+  const users = (await q.get<{ c: number; m: number }>("SELECT COUNT(*) AS c, SUM(email IS NOT NULL) AS m FROM users"))!;
+  const active = (await q.get<{ c: number }>("SELECT COUNT(DISTINCT user_id) AS c FROM page_progress WHERE updated_at >= datetime('now','-7 days')"))!.c;
+  const errors = (await q.get<{ c: number }>("SELECT COUNT(*) AS c FROM error_log"))!.c;
   const c = COVERAGE;
   return (
     <div className="space-y-10">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Box label="Қолданушылар" value={`${users.c}`} sub={`${users.m ?? 0} тіркелген`} />
         <Box label="7 күнде белсенді" value={`${active}`} sub="бет ашқандар" />
-        <Box label="AI шығыны бүгін" value={`$${todaySpendUsd().toFixed(2)}`} sub={`лимит $${getSettings().dailyBudgetUsd}`} />
+        <Box label="AI шығыны бүгін" value={`$${(await todaySpendUsd()).toFixed(2)}`} sub={`лимит $${(await getSettings()).dailyBudgetUsd}`} />
         <Box label="Қате журналы" value={`${errors}`} sub="жазба" />
       </div>
       <section>
@@ -117,11 +118,11 @@ function Box({ label, value, sub }: { label: string; value: string; sub: string 
   );
 }
 
-function Content({ page, w }: { page: number; w: string }) {
-  const p = getPage(Math.min(192, Math.max(1, page)))!;
-  const overrides = q.all<{ field: string; updated_at: string; updated_by: string | null }>("SELECT field, updated_at, updated_by FROM content_overrides WHERE page = ?", p.n);
+async function Content({ page, w }: { page: number; w: string }) {
+  const p = (await getPage(Math.min(192, Math.max(1, page))))!;
+  const overrides = await q.all<{ field: string; updated_at: string; updated_by: string | null }>("SELECT field, updated_at, updated_by FROM content_overrides WHERE page = ?", p.n);
   const term = w.toLocaleLowerCase("tr");
-  const words = term ? vocab().filter((x) => x.tr.toLocaleLowerCase("tr").includes(term) || x.kz.toLowerCase().includes(term)).slice(0, 30) : [];
+  const words = term ? (await vocab()).filter((x) => x.tr.toLocaleLowerCase("tr").includes(term) || x.kz.toLowerCase().includes(term)).slice(0, 30) : [];
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
       <PageEditor page={{ n: p.n, title: p.title, blocks: p.blocks, answers: p.answers }} overrides={overrides} />
@@ -130,12 +131,12 @@ function Content({ page, w }: { page: number; w: string }) {
   );
 }
 
-function Usage() {
-  const byDay = q.all<{ d: string; c: number; cost: number; inp: number; out: number; err: number }>(
+async function Usage() {
+  const byDay = await q.all<{ d: string; c: number; cost: number; inp: number; out: number; err: number }>(
     "SELECT date(created_at) AS d, COUNT(*) AS c, SUM(cost_usd) AS cost, SUM(input_tokens) AS inp, SUM(output_tokens) AS out, SUM(ok = 0) AS err FROM ai_usage GROUP BY d ORDER BY d DESC LIMIT 14",
   );
-  const byRoute = q.all<{ route: string; c: number; cost: number }>("SELECT route, COUNT(*) AS c, SUM(cost_usd) AS cost FROM ai_usage WHERE created_at >= date('now','-7 days') GROUP BY route ORDER BY cost DESC");
-  const top = q.all<{ user_id: string; email: string | null; c: number; cost: number }>(
+  const byRoute = await q.all<{ route: string; c: number; cost: number }>("SELECT route, COUNT(*) AS c, SUM(cost_usd) AS cost FROM ai_usage WHERE created_at >= date('now','-7 days') GROUP BY route ORDER BY cost DESC");
+  const top = await q.all<{ user_id: string; email: string | null; c: number; cost: number }>(
     "SELECT a.user_id, u.email, COUNT(*) AS c, SUM(a.cost_usd) AS cost FROM ai_usage a LEFT JOIN users u ON u.id = a.user_id WHERE a.created_at >= date('now') GROUP BY a.user_id ORDER BY cost DESC LIMIT 10",
   );
   return (
@@ -202,11 +203,11 @@ function Usage() {
   );
 }
 
-function Audio() {
-  const rows = q.all<{ id: number; page: number; title: string; uploaded_at: string }>("SELECT id, page, title, uploaded_at FROM audio_assets ORDER BY page");
+async function Audio() {
+  const rows = await q.all<{ id: number; page: number; title: string; uploaded_at: string }>("SELECT id, page, title, uploaded_at FROM audio_assets ORDER BY page");
   return (
     <div className="grid gap-10 lg:grid-cols-[380px_1fr]">
-      <AudioUpload />
+      <AudioUpload direct={blobEnabled()} />
       <div>
         <h2 className="font-serif text-xl">Жүктелген аудио</h2>
         {rows.length === 0 ? (
@@ -228,11 +229,11 @@ function Audio() {
   );
 }
 
-function Users() {
-  const rows = q.all<{ id: string; email: string | null; name: string | null; role: string; disabled: number; created_at: string; pages: number }>(
+async function Users() {
+  const rows = await q.all<{ id: string; email: string | null; name: string | null; role: string; disabled: number; created_at: string; pages: number }>(
     "SELECT u.id, u.email, u.name, u.role, u.disabled, u.created_at, (SELECT COUNT(*) FROM page_progress p WHERE p.user_id = u.id) AS pages FROM users u WHERE u.email IS NOT NULL ORDER BY u.created_at DESC LIMIT 200",
   );
-  const guests = q.get<{ c: number }>("SELECT COUNT(*) AS c FROM users WHERE email IS NULL")!.c;
+  const guests = (await q.get<{ c: number }>("SELECT COUNT(*) AS c FROM users WHERE email IS NULL"))!.c;
   return (
     <div>
       <p className="text-sm text-ink-2">
@@ -247,8 +248,8 @@ function Users() {
   );
 }
 
-function Errors() {
-  const rows = q.all<{ id: number; route: string; message: string; created_at: string }>("SELECT id, route, message, created_at FROM error_log ORDER BY id DESC LIMIT 100");
+async function Errors() {
+  const rows = await q.all<{ id: number; route: string; message: string; created_at: string }>("SELECT id, route, message, created_at FROM error_log ORDER BY id DESC LIMIT 100");
   return (
     <div>
       <ClearErrors />

@@ -26,8 +26,8 @@ export default async function UnitWords({ params }: { params: Promise<{ unit: st
   if (!unit) notFound();
   const user = await currentUser();
   const sets = KELIME.filter((k) => k.unit === unitId);
-  const words = wordsForUnit(unitId);
-  const st = new Map(q.all<{ word_id: string; interval_days: number; reps: number }>("SELECT word_id, interval_days, reps FROM vocab_state WHERE user_id = ?", user.id).map((r) => [r.word_id, r]));
+  const words = await wordsForUnit(unitId);
+  const st = new Map((await q.all<{ word_id: string; interval_days: number; reps: number }>("SELECT word_id, interval_days, reps FROM vocab_state WHERE user_id = ?", user.id)).map((r) => [r.word_id, r]));
   const mark = (id: string | null) => {
     const s = id ? st.get(id) : undefined;
     return !s?.reps ? "bg-surface-2" : s.interval_days >= 4 ? "bg-teal" : "bg-teal/40";

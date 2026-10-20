@@ -6,6 +6,8 @@ import { BRIEF, splitSpeech, toContents, type Turn } from "@/lib/speaking";
 import { synthesize } from "@/lib/tts";
 
 export const runtime = "nodejs";
+// Gemini calls (and retry waits when rate-limited) can take tens of seconds
+export const maxDuration = 60;
 
 const Meta = z.object({
   topic: z.string().max(80),
@@ -58,12 +60,12 @@ const FEEDBACK_SCHEMA = {
   required: ["summary_kz", "corrections", "strengths_kz", "next_steps_kz", "rubric", "pronunciation_note_kz"],
 };
 
-function saveSession(user: User, topic: string, transcript: Turn[], sessionId: number | null | undefined) {
+async function saveSession(user: User, topic: string, transcript: Turn[], sessionId: number | null | undefined) {
   if (sessionId) {
-    q.run("UPDATE speaking_sessions SET transcript = ? WHERE id = ? AND user_id = ?", JSON.stringify(transcript), sessionId, user.id);
+    await q.run("UPDATE speaking_sessions SET transcript = ? WHERE id = ? AND user_id = ?", JSON.stringify(transcript), sessionId, user.id);
     return sessionId;
   }
-  return Number(q.run("INSERT INTO speaking_sessions (user_id, topic, transcript) VALUES (?,?,?)", user.id, topic, JSON.stringify(transcript)).lastInsertRowid);
+  return Number((await q.run("INSERT INTO speaking_sessions (user_id, topic, transcript) VALUES (?,?,?)", user.id, topic, JSON.stringify(transcript))).lastInsertRowid);
 }
 
 /** Pre-synthesizes the Turkish part so the browser's /api/tts request is served from cache. */
@@ -99,7 +101,7 @@ export async function POST(req: Request) {
   const { topic, questions, messages, finish, examMode, mode } = parsed.data;
   const { sessionId } = parsed.data;
 
-  const g = guard(user, finish ? "speak-feedback" : "speak");
+  const g = await guard(user, finish ? "speak-feedback" : "speak");
   if (!g.ok) return Response.json({ error: g.message, code: g.code }, { status: g.status });
 
   try {
@@ -124,9 +126,9 @@ export async function POST(req: Request) {
           responseJsonSchema: FEEDBACK_SCHEMA,
         },
       });
-      logUsage(user, "speak-feedback", model, res.usageMetadata ?? null);
+      await logUsage(user, "speak-feedback", model, res.usageMetadata ?? null);
       const feedback = JSON.parse(res.text ?? "null");
-      if (sessionId) q.run("UPDATE speaking_sessions SET feedback = ?, transcript = ? WHERE id = ? AND user_id = ?", JSON.stringify(feedback), JSON.stringify(messages), sessionId, user.id);
+      if (sessionId) await q.run("UPDATE speaking_sessions SET feedback = ?, transcript = ? WHERE id = ? AND user_id = ?", JSON.stringify(feedback), JSON.stringify(messages), sessionId, user.id);
       return Response.json({ feedback, sessionId });
     }
 
@@ -149,7 +151,7 @@ export async function POST(req: Request) {
         config: { systemInstruction: system, responseMimeType: "application/json", responseJsonSchema: TURN_SCHEMA },
       }, "fast");
       usedModel = model;
-      logUsage(user, "speak", model, res.usageMetadata ?? null);
+      await logUsage(user, "speak", model, res.usageMetadata ?? null);
       const out = JSON.parse(res.text ?? "{}") as { transcript?: string; reply?: string };
       transcript = (out.transcript ?? "").trim();
       reply = (out.reply ?? "").trim();
@@ -157,17 +159,17 @@ export async function POST(req: Request) {
     } else {
       const { res, model } = await generate(g.textModel, { contents: toContents(messages), config: { systemInstruction: system } }, "fast");
       usedModel = model;
-      logUsage(user, "speak", model, res.usageMetadata ?? null);
+      await logUsage(user, "speak", model, res.usageMetadata ?? null);
       reply = (res.text ?? "").trim();
     }
     void usedModel;
 
     const history: Turn[] = transcript ? [...messages, { role: "user", content: transcript }, { role: "assistant", content: reply }] : [...messages, { role: "assistant", content: reply }];
-    const id = saveSession(user, topic, history, sessionId);
+    const id = await saveSession(user, topic, history, sessionId);
     const voice = await voiceFor(reply, g.ttsModel, user);
     return Response.json({ transcript, reply, ...voice, sessionId: id });
   } catch (err) {
-    logUsage(user, finish ? "speak-feedback" : "speak", g.textModel, null, err);
+    await logUsage(user, finish ? "speak-feedback" : "speak", g.textModel, null, err);
     return Response.json({ error: friendlyAiError(err) }, { status: 502 });
   }
 }

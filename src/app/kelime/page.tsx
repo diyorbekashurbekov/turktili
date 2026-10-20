@@ -11,9 +11,9 @@ export const metadata: Metadata = { title: "Kelime Dünyası" };
 
 export default async function KelimeHub() {
   const user = await currentUser();
-  const due = dueCount(user.id);
-  const stats = unitVocabStats(user.id);
-  const saved = savedWords(user.id);
+  const due = await dueCount(user.id);
+  const stats = await unitVocabStats(user.id);
+  const saved = await savedWords(user.id);
   const totalKelime = KELIME.reduce((s, k) => s + k.items.length, 0);
 
   return (

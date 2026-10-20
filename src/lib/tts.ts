@@ -1,8 +1,6 @@
 import "server-only";
 import crypto from "node:crypto";
-import fs from "node:fs";
-import path from "node:path";
-import { dataDir } from "./db";
+import { readFile, saveFile, type StoredFile } from "./storage";
 import { ApiError } from "@google/genai";
 import { gemini, logUsage } from "./ai";
 import { TTS_CHAIN } from "./settings";
@@ -12,7 +10,8 @@ import type { User } from "./auth";
  * Turkish speech synthesis with Gemini TTS (tr-TR), cached on disk.
  * Why server-side: browsers often have no Turkish voice and silently read Turkish
  * with an English voice. Gemini's native Turkish voice gives consistent pronunciation
- * on every device. Each unique text is synthesized once, then served from the cache.
+ * on every device. Each unique text is synthesized once, then served from the cache
+ * (local disk, or Vercel Blob in production — see storage.ts).
  */
 
 export type Voice = "f" | "m";
@@ -22,12 +21,6 @@ export const VOICE_NAMES: Record<Voice, string> = {
 };
 const CACHE_VERSION = "v2";
 
-export function cacheDir() {
-  const d = path.join(dataDir(), "tts");
-  fs.mkdirSync(d, { recursive: true });
-  return d;
-}
-
 export function normalizeTtsText(t: string) {
   return t.replace(/\s+/g, " ").replace(/\s*\([^)]*\)/g, "").trim();
 }
@@ -36,9 +29,10 @@ export function cacheKey(text: string, voice: Voice) {
   return crypto.createHash("sha256").update(`${CACHE_VERSION}|${voice}|${normalizeTtsText(text)}`).digest("hex").slice(0, 40);
 }
 
-export function cachedPath(text: string, voice: Voice) {
-  const f = path.join(cacheDir(), `${cacheKey(text, voice)}.wav`);
-  return fs.existsSync(f) ? f : null;
+const storageKey = (text: string, voice: Voice) => `tts/${cacheKey(text, voice)}.wav`;
+
+export function readCached(text: string, voice: Voice): Promise<StoredFile | null> {
+  return readFile(storageKey(normalizeTtsText(text), voice));
 }
 
 /** Turkish text only: Latin letters incl. Turkish ones; rejects Cyrillic so Kazakh is never read by a Turkish voice. */
@@ -91,22 +85,27 @@ export function trimSilence(pcm: Buffer, rate: number) {
   return pcm.subarray(Math.max(0, start - pad) * 2, Math.min(n, end + pad) * 2);
 }
 
-export async function synthesize(text: string, voice: Voice, model: string, user: User | null) {
+export async function synthesize(text: string, voice: Voice, model: string, user: User | null): Promise<{ file: StoredFile; cached: boolean }> {
   const clean = normalizeTtsText(text);
-  const hit = cachedPath(clean, voice);
+  const hit = await readCached(clean, voice);
   if (hit) return { file: hit, cached: true };
   // Only the text itself: TTS models read any instruction text aloud.
   const { res, model: used } = await queued(() => synthWithChain(clean, voice, model));
-  logUsage(user, "tts", used, res.usageMetadata ?? null);
+  await logUsage(user, "tts", used, res.usageMetadata ?? null);
   const part = res.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
   if (!part?.inlineData?.data) throw new Error("TTS returned no audio");
   const raw = Buffer.from(part.inlineData.data, "base64");
   const mime = part.inlineData.mimeType ?? "";
   // some TTS models return a WAV container, others raw L16 PCM
   const { pcm, rate } = mime.includes("wav") || raw.toString("ascii", 0, 4) === "RIFF" ? pcmFromWav(raw) : { pcm: raw, rate: Number(/rate=(\d+)/.exec(mime)?.[1] ?? 24000) };
-  const file = path.join(cacheDir(), `${cacheKey(clean, voice)}.wav`);
-  fs.writeFileSync(file, wavFromPcm(trimSilence(pcm, rate), rate));
-  return { file, cached: false };
+  const wav = wavFromPcm(trimSilence(pcm, rate), rate);
+  try {
+    await saveFile(storageKey(clean, voice), wav, "audio/wav");
+  } catch (err) {
+    // e.g. Vercel without Blob storage: still play the audio, just without caching it
+    console.error("TTS cache write failed", err);
+  }
+  return { file: { body: wav, size: wav.length }, cached: false };
 }
 
 // ── free-tier friendly synthesis: one request at a time, model chain, honour retry delays ──

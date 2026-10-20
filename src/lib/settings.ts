@@ -43,8 +43,12 @@ export const DEFAULT_SETTINGS: Settings = {
   },
 };
 
-export function getSettings(): Settings {
-  const rows = q.all<{ key: string; value: string }>("SELECT key, value FROM settings");
+// short cache: settings are read on every AI request; with Turso each read is a network round trip
+let cache: { at: number; value: Settings } | null = null;
+
+export async function getSettings(): Promise<Settings> {
+  if (cache && Date.now() - cache.at < 5000) return structuredClone(cache.value);
+  const rows = await q.all<{ key: string; value: string }>("SELECT key, value FROM settings");
   const s: Settings = structuredClone(DEFAULT_SETTINGS);
   for (const r of rows) {
     try {
@@ -57,11 +61,13 @@ export function getSettings(): Settings {
   if (!TEXT_MODELS.includes(s.textModel)) s.textModel = DEFAULT_SETTINGS.textModel;
   if (!TTS_MODELS.includes(s.ttsModel)) s.ttsModel = DEFAULT_SETTINGS.ttsModel;
   s.exam = { ...DEFAULT_SETTINGS.exam, ...s.exam, minutes: { ...DEFAULT_SETTINGS.exam.minutes, ...(s.exam?.minutes ?? {}) } };
+  cache = { at: Date.now(), value: structuredClone(s) };
   return s;
 }
 
-export function setSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
-  q.run(
+export async function setSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
+  cache = null;
+  await q.run(
     "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
     key,
     JSON.stringify(value),

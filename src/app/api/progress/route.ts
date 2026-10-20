@@ -28,37 +28,37 @@ export async function POST(req: Request) {
   const a = parsed.data;
   switch (a.type) {
     case "page": {
-      if (a.status === "reset") q.run("DELETE FROM page_progress WHERE user_id = ? AND page = ?", user.id, a.page);
+      if (a.status === "reset") await q.run("DELETE FROM page_progress WHERE user_id = ? AND page = ?", user.id, a.page);
       else if (a.status === "completed")
-        q.run(
+        await q.run(
           "INSERT INTO page_progress (user_id, page, status) VALUES (?,?,'completed') ON CONFLICT(user_id, page) DO UPDATE SET status='completed', updated_at=datetime('now')",
           user.id,
           a.page,
         );
-      else q.run("INSERT OR IGNORE INTO page_progress (user_id, page, status) VALUES (?,?,'visited')", user.id, a.page);
-      q.run("UPDATE users SET last_page = ? WHERE id = ?", a.page, user.id);
+      else await q.run("INSERT OR IGNORE INTO page_progress (user_id, page, status) VALUES (?,?,'visited')", user.id, a.page);
+      await q.run("UPDATE users SET last_page = ? WHERE id = ?", a.page, user.id);
       return Response.json({ ok: true });
     }
     case "bookmark":
-      if (a.on) q.run("INSERT OR IGNORE INTO bookmarks (user_id, page) VALUES (?,?)", user.id, a.page);
-      else q.run("DELETE FROM bookmarks WHERE user_id = ? AND page = ?", user.id, a.page);
+      if (a.on) await q.run("INSERT OR IGNORE INTO bookmarks (user_id, page) VALUES (?,?)", user.id, a.page);
+      else await q.run("DELETE FROM bookmarks WHERE user_id = ? AND page = ?", user.id, a.page);
       return Response.json({ ok: true });
     case "note": {
-      const existing = q.get<{ id: number }>("SELECT id FROM notes WHERE user_id = ? AND page = ?", user.id, a.page);
+      const existing = await q.get<{ id: number }>("SELECT id FROM notes WHERE user_id = ? AND page = ?", user.id, a.page);
       if (!a.text.trim()) {
-        if (existing) q.run("DELETE FROM notes WHERE id = ?", existing.id);
-      } else if (existing) q.run("UPDATE notes SET text = ?, updated_at = datetime('now') WHERE id = ?", a.text, existing.id);
-      else q.run("INSERT INTO notes (user_id, page, text) VALUES (?,?,?)", user.id, a.page, a.text);
+        if (existing) await q.run("DELETE FROM notes WHERE id = ?", existing.id);
+      } else if (existing) await q.run("UPDATE notes SET text = ?, updated_at = datetime('now') WHERE id = ?", a.text, existing.id);
+      else await q.run("INSERT INTO notes (user_id, page, text) VALUES (?,?,?)", user.id, a.page, a.text);
       return Response.json({ ok: true });
     }
     case "vocab-review": {
-      const s = q.get<{ reps: number; lapses: number; ease: number; interval_days: number }>(
+      const s = await q.get<{ reps: number; lapses: number; ease: number; interval_days: number }>(
         "SELECT reps, lapses, ease, interval_days FROM vocab_state WHERE user_id = ? AND word_id = ?",
         user.id,
         a.wordId,
       ) ?? { reps: 0, lapses: 0, ease: 2.5, interval_days: 0 };
       const n = review(s, a.grade);
-      q.run(
+      await q.run(
         `INSERT INTO vocab_state (user_id, word_id, reps, lapses, ease, interval_days, due_at, last_seen)
          VALUES (?,?,?,?,?,?,?,datetime('now'))
          ON CONFLICT(user_id, word_id) DO UPDATE SET reps=excluded.reps, lapses=excluded.lapses, ease=excluded.ease,
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       return Response.json({ ok: true, state: n });
     }
     case "vocab-save":
-      q.run(
+      await q.run(
         `INSERT INTO vocab_state (user_id, word_id, saved, due_at) VALUES (?,?,?,datetime('now'))
          ON CONFLICT(user_id, word_id) DO UPDATE SET saved = excluded.saved`,
         user.id,
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       return Response.json({ ok: true });
     case "attempts":
       for (const it of a.items)
-        q.run(
+        await q.run(
           "INSERT INTO attempts (user_id, skill, unit, item_id, correct, given) VALUES (?,?,?,?,?,?)",
           user.id,
           a.skill,
@@ -95,14 +95,14 @@ export async function POST(req: Request) {
         );
       // a later correct answer resolves earlier mistakes on the same item
       for (const it of a.items.filter((x) => x.correct))
-        q.run("UPDATE attempts SET resolved = 1 WHERE user_id = ? AND item_id = ? AND correct = 0", user.id, it.itemId);
+        await q.run("UPDATE attempts SET resolved = 1 WHERE user_id = ? AND item_id = ? AND correct = 0", user.id, it.itemId);
       return Response.json({ ok: true });
     case "resolve":
-      for (const id of a.ids) q.run("UPDATE attempts SET resolved = 1 WHERE id = ? AND user_id = ?", id, user.id);
+      for (const id of a.ids) await q.run("UPDATE attempts SET resolved = 1 WHERE id = ? AND user_id = ?", id, user.id);
       return Response.json({ ok: true });
     case "prefs":
-      if (a.examDate !== undefined) q.run("UPDATE users SET exam_date = ? WHERE id = ?", a.examDate, user.id);
-      if (a.name !== undefined) q.run("UPDATE users SET name = ? WHERE id = ?", a.name, user.id);
+      if (a.examDate !== undefined) await q.run("UPDATE users SET exam_date = ? WHERE id = ?", a.examDate, user.id);
+      if (a.name !== undefined) await q.run("UPDATE users SET name = ? WHERE id = ?", a.name, user.id);
       return Response.json({ ok: true });
   }
 }

@@ -1,14 +1,20 @@
 import "server-only";
-import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
+import type { DatabaseSync } from "node:sqlite";
+import type { Client } from "@libsql/client";
 
+// Database backend:
+//  - TURSO_DATABASE_URL set → libSQL (Turso). Required on Vercel: each route runs as a separate
+//    serverless function with its own temporary disk, so a local file would not be shared.
+//    A "file:" URL uses a local libSQL file (for testing this code path without an account).
+//  - otherwise → a local SQLite file via the built-in node:sqlite (development, tests, Railway volume).
+// Both are SQLite, so every query is shared.
 // Railway: a volume exposes RAILWAY_VOLUME_MOUNT_PATH; DATA_DIR wins if set explicitly
 const DATA_DIR = process.env.DATA_DIR || process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(process.cwd(), "data");
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
 
 const SCHEMA = `
-PRAGMA journal_mode = WAL;
-PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE,
@@ -164,14 +170,59 @@ CREATE TABLE IF NOT EXISTS error_log (
 );
 `;
 
-const g = globalThis as unknown as { __yiDb?: DatabaseSync };
+type Param = string | number | null;
+type Row = Record<string, unknown>;
+type RunResult = { changes: number; lastInsertRowid: number };
+type Backend = {
+  all(sql: string, params: Param[]): Promise<Row[]>;
+  run(sql: string, params: Param[]): Promise<RunResult>;
+};
 
-export function db(): DatabaseSync {
+function localBackend(): Backend {
+  // required lazily so a Turso deployment never opens node:sqlite
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { DatabaseSync: Sqlite } = require("node:sqlite") as { DatabaseSync: typeof DatabaseSync };
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  const d = new Sqlite(path.join(DATA_DIR, "app.db"));
+  d.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;" + SCHEMA);
+  return {
+    // node:sqlite returns null-prototype objects; React cannot pass those to client components.
+    async all(sql, params) {
+      return d.prepare(sql).all(...params).map((r) => ({ ...(r as object) }) as Row);
+    },
+    async run(sql, params) {
+      const r = d.prepare(sql).run(...params);
+      return { changes: Number(r.changes), lastInsertRowid: Number(r.lastInsertRowid) };
+    },
+  };
+}
+
+async function tursoBackend(url: string): Promise<Backend> {
+  // the web client is pure fetch (no native module) — what Vercel runs; file: URLs need the Node client
+  const { createClient } = url.startsWith("file:") ? await import("@libsql/client") : await import("@libsql/client/web");
+  const c: Client = createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });
+  await c.executeMultiple(SCHEMA);
+  const plain = (v: unknown) => (typeof v === "bigint" ? Number(v) : v);
+  return {
+    async all(sql, params) {
+      const rs = await c.execute({ sql, args: params });
+      return rs.rows.map((r) => Object.fromEntries(rs.columns.map((col, i) => [col, plain(r[i])])) as Row);
+    },
+    async run(sql, params) {
+      const rs = await c.execute({ sql, args: params });
+      return { changes: rs.rowsAffected, lastInsertRowid: Number(rs.lastInsertRowid ?? 0) };
+    },
+  };
+}
+
+const g = globalThis as unknown as { __yiDb?: Promise<Backend> };
+
+function backend(): Promise<Backend> {
   if (!g.__yiDb) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-    const d = new DatabaseSync(path.join(DATA_DIR, "app.db"));
-    d.exec(SCHEMA);
-    g.__yiDb = d;
+    g.__yiDb = (TURSO_URL ? tursoBackend(TURSO_URL) : Promise.resolve().then(localBackend)).catch((err) => {
+      g.__yiDb = undefined; // retry on the next request instead of caching the failure
+      throw err;
+    });
   }
   return g.__yiDb;
 }
@@ -180,25 +231,22 @@ export function dataDir() {
   return DATA_DIR;
 }
 
-type Row = Record<string, unknown>;
-// node:sqlite returns null-prototype objects; React cannot pass those to client components.
-const plain = <T,>(r: unknown) => (r ? ({ ...(r as object) } as T) : undefined);
 export const q = {
-  get<T = Row>(sql: string, ...params: (string | number | null)[]): T | undefined {
-    return plain<T>(db().prepare(sql).get(...params));
+  async get<T = Row>(sql: string, ...params: Param[]): Promise<T | undefined> {
+    return (await (await backend()).all(sql, params))[0] as T | undefined;
   },
-  all<T = Row>(sql: string, ...params: (string | number | null)[]): T[] {
-    return db().prepare(sql).all(...params).map((r) => ({ ...(r as object) }) as T);
+  async all<T = Row>(sql: string, ...params: Param[]): Promise<T[]> {
+    return (await (await backend()).all(sql, params)) as T[];
   },
-  run(sql: string, ...params: (string | number | null)[]) {
-    return db().prepare(sql).run(...params);
+  async run(sql: string, ...params: Param[]): Promise<RunResult> {
+    return (await backend()).run(sql, params);
   },
 };
 
-export function logError(route: string, err: unknown) {
+export async function logError(route: string, err: unknown) {
   const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
   try {
-    q.run("INSERT INTO error_log (route, message) VALUES (?, ?)", route, message.slice(0, 2000));
+    await q.run("INSERT INTO error_log (route, message) VALUES (?, ?)", route, message.slice(0, 2000));
   } catch {
     // the error log must never throw
   }

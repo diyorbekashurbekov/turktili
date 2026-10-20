@@ -17,34 +17,34 @@ export function gemini() {
 
 export type GuardResult = { ok: true; textModel: string; ttsModel: string } | { ok: false; status: number; code: string; message: string };
 
-export function todaySpendUsd() {
-  return q.get<{ s: number | null }>("SELECT SUM(cost_usd) AS s FROM ai_usage WHERE created_at >= date('now')")?.s ?? 0;
+export async function todaySpendUsd() {
+  return (await q.get<{ s: number | null }>("SELECT SUM(cost_usd) AS s FROM ai_usage WHERE created_at >= date('now')"))?.s ?? 0;
 }
 
-export function userRequestsToday(userId: string, kind: "ai" | "tts" = "ai") {
+export async function userRequestsToday(userId: string, kind: "ai" | "tts" = "ai") {
   const sql =
     kind === "tts"
       ? "SELECT COUNT(*) AS c FROM ai_usage WHERE user_id = ? AND route = 'tts' AND created_at >= date('now')"
       : "SELECT COUNT(*) AS c FROM ai_usage WHERE user_id = ? AND route <> 'tts' AND created_at >= date('now')";
-  return q.get<{ c: number }>(sql, userId)?.c ?? 0;
+  return (await q.get<{ c: number }>(sql, userId))?.c ?? 0;
 }
 
 /** Cost protection: kill switch, global daily budget, per-user quota, burst rate limit. */
-export function guard(user: User, route: string): GuardResult {
-  const s = getSettings();
+export async function guard(user: User, route: string): Promise<GuardResult> {
+  const s = await getSettings();
   if (!aiConfigured())
     return { ok: false, status: 503, code: "not_configured", message: "AI мұғалім әлі қосылмаған: серверде GEMINI_API_KEY орнатылмаған." };
   if (!s.aiEnabled) return { ok: false, status: 503, code: "disabled", message: "AI мұғалімді әкімші уақытша өшірді." };
-  if (todaySpendUsd() >= s.dailyBudgetUsd)
+  if ((await todaySpendUsd()) >= s.dailyBudgetUsd)
     return { ok: false, status: 429, code: "budget", message: "Бүгінгі ортақ AI лимиті таусылды. Ертең қайта көріңіз — басқа жаттығулар жұмыс істейді." };
   if (route === "tts") {
-    if (userRequestsToday(user.id, "tts") >= s.ttsDailyPerUser)
+    if ((await userRequestsToday(user.id, "tts")) >= s.ttsDailyPerUser)
       return { ok: false, status: 429, code: "quota", message: "Бүгінгі дыбыс лимиті бітті. Ертең жалғастырыңыз." };
     if (!rateLimit(`tts:${user.id}`, 40, 60_000)) return { ok: false, status: 429, code: "rate", message: "Тым жиі сұрау. Сәлден соң қайталаңыз." };
     return { ok: true, textModel: s.textModel, ttsModel: s.ttsModel };
   }
   const limit = isGuest(user) ? s.guestDailyRequests : s.memberDailyRequests;
-  if (userRequestsToday(user.id) >= limit)
+  if ((await userRequestsToday(user.id)) >= limit)
     return {
       ok: false,
       status: 429,
@@ -59,25 +59,29 @@ export function guard(user: User, route: string): GuardResult {
 
 type Usage = GenerateContentResponse["usageMetadata"];
 
-export function logUsage(user: User | null, route: string, model: string, usage: Usage | null, error?: unknown) {
+export async function logUsage(user: User | null, route: string, model: string, usage: Usage | null, error?: unknown) {
   const p = PRICING[model] ?? { in: 0.5, out: 10 };
   const input = usage?.promptTokenCount ?? 0;
   const out = (usage?.candidatesTokenCount ?? 0) + (usage?.thoughtsTokenCount ?? 0);
   const cacheRead = usage?.cachedContentTokenCount ?? 0;
   const cost = (input * p.in + out * p.out) / 1_000_000;
-  q.run(
-    "INSERT INTO ai_usage (user_id, route, model, input_tokens, output_tokens, cache_read_tokens, cost_usd, ok, error) VALUES (?,?,?,?,?,?,?,?,?)",
-    user?.id ?? null,
-    route,
-    model,
-    input,
-    out,
-    cacheRead,
-    cost,
-    error ? 0 : 1,
-    error ? String(error instanceof Error ? error.message : error).slice(0, 500) : null,
-  );
-  if (error) logError(`ai:${route}`, error);
+  try {
+    await q.run(
+      "INSERT INTO ai_usage (user_id, route, model, input_tokens, output_tokens, cache_read_tokens, cost_usd, ok, error) VALUES (?,?,?,?,?,?,?,?,?)",
+      user?.id ?? null,
+      route,
+      model,
+      input,
+      out,
+      cacheRead,
+      cost,
+      error ? 0 : 1,
+      error ? String(error instanceof Error ? error.message : error).slice(0, 500) : null,
+    );
+  } catch (err) {
+    console.error("usage log failed", err); // logging must never break a student's request
+  }
+  if (error) await logError(`ai:${route}`, error);
 }
 
 /** Retryable on the fallback model: overloaded, rate-limited, unavailable or unknown model. */

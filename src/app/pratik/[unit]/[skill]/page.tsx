@@ -35,7 +35,7 @@ export default async function Practice({ params }: { params: Promise<{ unit: str
   const user = await currentUser();
   const history =
     skill === "yazma"
-      ? q.all<{ id: number; prompt_id: string; text: string; feedback: string | null; created_at: string }>(
+      ? await q.all<{ id: number; prompt_id: string; text: string; feedback: string | null; created_at: string }>(
           "SELECT id, prompt_id, text, feedback, created_at FROM writings WHERE user_id = ? AND prompt_id LIKE ? ORDER BY id DESC LIMIT 6",
           user.id,
           `u${unitId}w%`,

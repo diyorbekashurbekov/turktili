@@ -13,8 +13,8 @@ export const metadata: Metadata = { title: "Sınav" };
 
 export default async function ExamCenter() {
   const user = await currentUser();
-  const cfg = getSettings().exam;
-  const history = q.all<{ id: number; type: ExamType; result: string; finished_at: string }>(
+  const cfg = (await getSettings()).exam;
+  const history = await q.all<{ id: number; type: ExamType; result: string; finished_at: string }>(
     "SELECT id, type, result, finished_at FROM exams WHERE user_id = ? AND finished_at IS NOT NULL ORDER BY id DESC LIMIT 12",
     user.id,
   );

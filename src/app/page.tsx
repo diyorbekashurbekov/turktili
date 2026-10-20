@@ -11,8 +11,8 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const user = await currentUser();
-  const ov = overview(user.id);
-  const last = user.last_page ? getPage(user.last_page) : null;
+  const ov = await overview(user.id);
+  const last = user.last_page ? await getPage(user.last_page) : null;
   const firstName = user.name?.split(" ")[0] ?? null;
   const pct = Math.round((ov.pagesCompleted / 192) * 100);
 

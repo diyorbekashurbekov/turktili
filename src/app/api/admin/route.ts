@@ -1,11 +1,11 @@
-import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { z } from "zod";
 import { currentUser, isAdmin } from "@/lib/auth";
-import { dataDir, q } from "@/lib/db";
+import { q } from "@/lib/db";
+import { audioKey, audioType, deleteFile, saveFile } from "@/lib/storage";
 import { getSettings, setSetting, TEXT_MODELS, TTS_MODELS } from "@/lib/settings";
-import { invalidateVocab } from "@/content";
+import { invalidateOverrides, invalidateVocab } from "@/content";
 
 export const runtime = "nodejs";
 
@@ -38,6 +38,13 @@ const Action = z.discriminatedUnion("action", [
   z.object({ action: z.literal("vocab-override"), wordId: z.string().max(12), tr: z.string().min(1).max(120), kz: z.string().min(1).max(200) }),
   z.object({ action: z.literal("user"), userId: z.string(), disabled: z.boolean().optional(), role: z.enum(["student", "admin"]).optional() }),
   z.object({ action: z.literal("audio-delete"), id: z.number().int() }),
+  // registers a file the admin's browser uploaded directly to Vercel Blob (see /api/admin/upload)
+  z.object({
+    action: z.literal("audio-register"),
+    page: z.number().int().min(1).max(192),
+    title: z.string().min(1).max(120),
+    key: z.string().regex(/^audio\/[\w.-]+\.(mp3|m4a|ogg|wav)$/i),
+  }),
   z.object({ action: z.literal("errors-clear") }),
 ]);
 
@@ -59,11 +66,9 @@ export async function POST(req: Request) {
     if (!(file instanceof File) || !page || page < 1 || page > 192 || !title) return Response.json({ error: "Файл, бет және атау қажет." }, { status: 400 });
     const ext = path.extname(file.name).toLowerCase();
     if (![".mp3", ".m4a", ".ogg", ".wav"].includes(ext) || file.size > 30 * 1024 * 1024) return Response.json({ error: "mp3/m4a/ogg/wav, 30 МБ дейін." }, { status: 400 });
-    const dir = path.join(dataDir(), "audio");
-    fs.mkdirSync(dir, { recursive: true });
-    const name = `${page}-${crypto.randomBytes(6).toString("hex")}${ext}`;
-    fs.writeFileSync(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
-    q.run("INSERT INTO audio_assets (page, title, filename) VALUES (?,?,?)", page, title, name);
+    const key = `audio/${page}-${crypto.randomBytes(6).toString("hex")}${ext}`;
+    await saveFile(key, Buffer.from(await file.arrayBuffer()), audioType(ext));
+    await q.run("INSERT INTO audio_assets (page, title, filename) VALUES (?,?,?)", page, title, key);
     return Response.json({ ok: true });
   }
 
@@ -74,26 +79,28 @@ export async function POST(req: Request) {
     case "settings": {
       const { action: _action, ...rest } = a;
       void _action;
-      for (const [k, v] of Object.entries(rest)) setSetting(k as keyof typeof rest, v as never);
+      for (const [k, v] of Object.entries(rest)) await setSetting(k as keyof typeof rest, v as never);
       break;
     }
     case "exam":
-      setSetting("exam", { ...getSettings().exam, ...a.exam });
+      await setSetting("exam", { ...(await getSettings()).exam, ...a.exam });
       break;
     case "page-override":
-      q.run(
+      await q.run(
         "INSERT INTO content_overrides (page, field, value, updated_by) VALUES (?,?,?,?) ON CONFLICT(page, field) DO UPDATE SET value = excluded.value, updated_by = excluded.updated_by, updated_at = datetime('now')",
         a.page,
         a.field,
         a.value,
         admin.email,
       );
+      invalidateOverrides();
       break;
     case "page-override-clear":
-      q.run("DELETE FROM content_overrides WHERE page = ? AND field = ?", a.page, a.field);
+      await q.run("DELETE FROM content_overrides WHERE page = ? AND field = ?", a.page, a.field);
+      invalidateOverrides();
       break;
     case "vocab-override":
-      q.run(
+      await q.run(
         "INSERT INTO vocab_overrides (word_id, tr, kz) VALUES (?,?,?) ON CONFLICT(word_id) DO UPDATE SET tr = excluded.tr, kz = excluded.kz, updated_at = datetime('now')",
         a.wordId,
         a.tr,
@@ -102,19 +109,22 @@ export async function POST(req: Request) {
       invalidateVocab();
       break;
     case "user":
-      if (a.disabled !== undefined) q.run("UPDATE users SET disabled = ? WHERE id = ?", a.disabled ? 1 : 0, a.userId);
-      if (a.role) q.run("UPDATE users SET role = ? WHERE id = ?", a.role, a.userId);
+      if (a.disabled !== undefined) await q.run("UPDATE users SET disabled = ? WHERE id = ?", a.disabled ? 1 : 0, a.userId);
+      if (a.role) await q.run("UPDATE users SET role = ? WHERE id = ?", a.role, a.userId);
       break;
     case "audio-delete": {
-      const row = q.get<{ filename: string }>("SELECT filename FROM audio_assets WHERE id = ?", a.id);
+      const row = await q.get<{ filename: string }>("SELECT filename FROM audio_assets WHERE id = ?", a.id);
       if (row) {
-        fs.rmSync(path.join(dataDir(), "audio", path.basename(row.filename)), { force: true });
-        q.run("DELETE FROM audio_assets WHERE id = ?", a.id);
+        await deleteFile(audioKey(row.filename));
+        await q.run("DELETE FROM audio_assets WHERE id = ?", a.id);
       }
       break;
     }
+    case "audio-register":
+      await q.run("INSERT INTO audio_assets (page, title, filename) VALUES (?,?,?)", a.page, a.title, a.key);
+      break;
     case "errors-clear":
-      q.run("DELETE FROM error_log");
+      await q.run("DELETE FROM error_log");
       break;
   }
   return Response.json({ ok: true });

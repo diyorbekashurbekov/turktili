@@ -13,9 +13,9 @@ export const metadata: Metadata = { title: "İçindekiler" };
 
 export default async function Contents() {
   const user = await currentUser();
-  const st = pageStatuses(user.id);
-  const bookmarks = q.all<{ page: number }>("SELECT page FROM bookmarks WHERE user_id = ? ORDER BY created_at DESC", user.id);
-  const last = user.last_page ? getPage(user.last_page) : null;
+  const st = await pageStatuses(user.id);
+  const bookmarks = await q.all<{ page: number }>("SELECT page FROM bookmarks WHERE user_id = ? ORDER BY created_at DESC", user.id);
+  const last = user.last_page ? await getPage(user.last_page) : null;
   const front = UNITS[0];
   const back = UNITS[9];
 

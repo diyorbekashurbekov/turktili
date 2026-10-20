@@ -36,14 +36,14 @@ function newId() {
   return crypto.randomBytes(16).toString("hex");
 }
 
-function createGuest(): User {
+async function createGuest(): Promise<User> {
   const id = newId();
-  q.run("INSERT INTO users (id) VALUES (?)", id);
-  return q.get<User>("SELECT * FROM users WHERE id = ?", id)!;
+  await q.run("INSERT INTO users (id) VALUES (?)", id);
+  return (await q.get<User>("SELECT * FROM users WHERE id = ?", id))!;
 }
 
-function bindSession(sid: string, userId: string) {
-  q.run(
+async function bindSession(sid: string, userId: string) {
+  await q.run(
     "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, datetime('now', ?)) ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, expires_at = excluded.expires_at",
     sid,
     userId,
@@ -61,15 +61,15 @@ export async function currentUser(): Promise<User> {
   const sid = jar.get(SESSION_COOKIE)?.value;
   if (!sid || sid.length < 32) {
     // No cookie (e.g. API call without middleware) — ephemeral guest.
-    return createGuest();
+    return await createGuest();
   }
-  const row = q.get<User>(
+  const row = await q.get<User>(
     "SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.id = ? AND s.expires_at > datetime('now')",
     sid,
   );
   if (row && !row.disabled) return row;
-  const guest = createGuest();
-  bindSession(sid, guest.id);
+  const guest = await createGuest();
+  await bindSession(sid, guest.id);
   return guest;
 }
 
@@ -96,33 +96,33 @@ export function verifyPassword(pw: string, stored: string | null) {
 export async function register(email: string, password: string, name: string) {
   const user = await currentUser();
   const sid = await currentSessionId();
-  const exists = q.get("SELECT id FROM users WHERE lower(email) = lower(?)", email);
+  const exists = await q.get("SELECT id FROM users WHERE lower(email) = lower(?)", email);
   if (exists) return { ok: false as const, error: "Бұл email тіркелген." };
   if (isGuest(user)) {
     // Upgrade the guest in place so existing progress is kept.
-    q.run("UPDATE users SET email = ?, name = ?, password_hash = ? WHERE id = ?", email, name, hashPassword(password), user.id);
+    await q.run("UPDATE users SET email = ?, name = ?, password_hash = ? WHERE id = ?", email, name, hashPassword(password), user.id);
     return { ok: true as const };
   }
   const id = newId();
-  q.run("INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)", id, email, name, hashPassword(password));
-  if (sid) bindSession(sid, id);
+  await q.run("INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)", id, email, name, hashPassword(password));
+  if (sid) await bindSession(sid, id);
   return { ok: true as const };
 }
 
 export async function login(email: string, password: string) {
-  const row = q.get<User & { password_hash: string }>("SELECT * FROM users WHERE lower(email) = lower(?)", email);
+  const row = await q.get<User & { password_hash: string }>("SELECT * FROM users WHERE lower(email) = lower(?)", email);
   if (!row || row.disabled || !verifyPassword(password, row.password_hash)) {
     return { ok: false as const, error: "Email немесе құпиясөз қате." };
   }
   const sid = await currentSessionId();
   if (!sid) return { ok: false as const, error: "Сессия табылмады. Бетті жаңартыңыз." };
-  bindSession(sid, row.id);
+  await bindSession(sid, row.id);
   return { ok: true as const };
 }
 
 export async function logout() {
   const sid = await currentSessionId();
-  if (sid) q.run("DELETE FROM sessions WHERE id = ?", sid);
+  if (sid) await q.run("DELETE FROM sessions WHERE id = ?", sid);
 }
 
 // ---------- tiny in-memory rate limiter (per process) ----------

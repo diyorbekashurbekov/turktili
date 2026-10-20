@@ -24,22 +24,22 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   const s = Start.safeParse(body);
   if (s.success) {
-    const plan = composeExam(s.data.type, s.data.unit ?? null, getSettings().exam);
-    const id = Number(q.run("INSERT INTO exams (user_id, type, config) VALUES (?,?,?)", user.id, s.data.type, JSON.stringify(plan)).lastInsertRowid);
+    const plan = await composeExam(s.data.type, s.data.unit ?? null, (await getSettings()).exam);
+    const id = Number((await q.run("INSERT INTO exams (user_id, type, config) VALUES (?,?,?)", user.id, s.data.type, JSON.stringify(plan))).lastInsertRowid);
     return Response.json({ id });
   }
   const sub = Submit.safeParse(body);
   if (!sub.success) return Response.json({ error: "bad request" }, { status: 400 });
-  const row = q.get<{ config: string; finished_at: string | null }>("SELECT config, finished_at FROM exams WHERE id = ? AND user_id = ?", sub.data.id, user.id);
+  const row = await q.get<{ config: string; finished_at: string | null }>("SELECT config, finished_at FROM exams WHERE id = ? AND user_id = ?", sub.data.id, user.id);
   if (!row) return Response.json({ error: "not found" }, { status: 404 });
   if (row.finished_at) return Response.json({ ok: true, id: sub.data.id });
   const plan = JSON.parse(row.config) as ExamPlan;
   const w = sub.data.writing ? { text: sub.data.writing.text, feedback: sub.data.writing.feedback ?? null } : null;
   const sp = sub.data.speaking ? { sessionId: sub.data.speaking.sessionId, feedback: sub.data.speaking.feedback ?? null } : null;
   const result = gradeExam(plan, sub.data.answers, w, sp);
-  q.run("UPDATE exams SET answers = ?, result = ?, finished_at = datetime('now') WHERE id = ?", JSON.stringify(sub.data.answers), JSON.stringify(result), sub.data.id);
+  await q.run("UPDATE exams SET answers = ?, result = ?, finished_at = datetime('now') WHERE id = ?", JSON.stringify(sub.data.answers), JSON.stringify(result), sub.data.id);
   for (const it of result.items)
-    q.run(
+    await q.run(
       "INSERT INTO attempts (user_id, skill, unit, item_id, correct, given) VALUES (?,?,?,?,?,?)",
       user.id,
       it.skill,

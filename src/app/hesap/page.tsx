@@ -16,9 +16,9 @@ const UNIT_TR = ["", "Tanışma", "Ailemiz", "Günlük Hayat", "Çevremiz", "Mes
 export default async function Account() {
   const user = await currentUser();
   const guest = isGuest(user);
-  const ov = overview(user.id);
-  const s = getSettings();
-  const aiUsed = userRequestsToday(user.id);
+  const ov = await overview(user.id);
+  const s = await getSettings();
+  const aiUsed = await userRequestsToday(user.id);
 
   return (
     <PageShell userLabel={guest ? "Қонақ" : (user.name ?? "")}>

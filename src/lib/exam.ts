@@ -51,7 +51,7 @@ const keyOf = (q: Question, skill: string, unit: number): KeyItem => ({
   options: q.type === "mcq" ? q.options : undefined,
 });
 
-export function composeExam(type: ExamType, unit: number | null, cfg: ExamConfig, seed = Date.now()): ExamPlan {
+export async function composeExam(type: ExamType, unit: number | null, cfg: ExamConfig, seed = Date.now()): Promise<ExamPlan> {
   const r = rng(seed);
   const units = unit ? PRACTICE.filter((p) => p.unit === unit) : shuffle(PRACTICE, r);
   const sections: ExamSection[] = [];
@@ -82,9 +82,10 @@ export function composeExam(type: ExamType, unit: number | null, cfg: ExamConfig
     sections.push({ kind: "mcq", skill: "gramer", title: "Dil Bilgisi · Грамматика", questions: pool.map((x) => strip(x.q)) });
     key.push(...pool.map((x) => keyOf(x.q, "gramer", x.unit)));
   };
+  const vocabUnits = unit ? [unit] : [1, 2, 3, 4, 5, 6, 7, 8];
+  const vocabLists = await Promise.all(vocabUnits.map(async (u) => (await wordsForUnit(u, true)).map((w) => ({ w, u }))));
   const addVocab = (max: number) => {
-    const unitIds = unit ? [unit] : [1, 2, 3, 4, 5, 6, 7, 8];
-    const candidates = unitIds.flatMap((u) => wordsForUnit(u, true).map((w) => ({ w, u }))).filter((x) => x.w.kz.length < 60 && x.w.tr.length < 30);
+    const candidates = vocabLists.flat().filter((x) => x.w.kz.length < 60 && x.w.tr.length < 30);
     const picked = shuffle(candidates, r).slice(0, max);
     const qs: Question[] = picked.map(({ w, u }) => {
       const distract = shuffle(candidates.filter((c) => c.w.id !== w.id && c.w.kz !== w.kz), r).slice(0, 3).map((c) => c.w.kz);
