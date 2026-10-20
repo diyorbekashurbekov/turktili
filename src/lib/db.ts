@@ -3,7 +3,8 @@ import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 
-const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
+// Railway: a volume exposes RAILWAY_VOLUME_MOUNT_PATH; DATA_DIR wins if set explicitly
+const DATA_DIR = process.env.DATA_DIR || process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(process.cwd(), "data");
 
 const SCHEMA = `
 PRAGMA journal_mode = WAL;

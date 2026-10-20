@@ -17,7 +17,16 @@ npm run build && npm start
 
 Configuration template: `.env.example` (no secrets). Put real values in `.env.local` (gitignored); `GEMINI_API_KEY` enables the AI teacher, voice and transcription. Users whose emails are listed in `ADMIN_EMAILS` get the admin panel once they register.
 
-Requires **Node ≥ 22.5** for the built-in `node:sqlite`. Development and testing used Node 24.19.
+Requires **Node ≥ 22.13** for the built-in `node:sqlite`. Development and testing used Node 24.19.
+
+## Deploy on Railway
+
+`railway.json` sets the build (`npm run build`), start (`npm start`, which listens on Railway's `$PORT`), a health check on `/` and **one replica** (SQLite is a single file, so do not scale out). Node 24 comes from `.node-version`.
+
+1. railway.com → New Project → Deploy from GitHub repo → `diyorbekashurbekov/turktili`.
+2. Service → right-click → Attach volume, mount path `/data`. The app stores `app.db`, the TTS cache and uploaded audio there (`RAILWAY_VOLUME_MOUNT_PATH` is picked up automatically; `DATA_DIR` overrides it).
+3. Variables: `GEMINI_API_KEY` (required for AI), `ADMIN_EMAILS`, optionally `AI_DAILY_BUDGET_USD`, `GEMINI_TEXT_MODEL`, `GEMINI_TTS_MODEL`.
+4. Settings → Networking → Generate Domain. Every push to `main` redeploys.
 
 ## Architecture decisions
 
