@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yedi İklim A1</title>
+<meta name="description" content="Yedi İklim Türkçe A1 оқулығына негізделген AI платформа: интерактивті кітап, сөздік, төрт дағды, емтихан және AI мұғалім.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&subset=latin-ext,cyrillic-ext&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f3ec; --surface: #fbf9f4; --ink: #1c1f23; --ink-2: #4a4f55; --ink-3: #7d8288;
+    --line: #e3ddd1; --teal: #12807f; --teal-ink: #0b5e5d; --teal-soft: #ddeeeb; --teal-cover: #3bb6b3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141618; --surface: #1b1e21; --ink: #ecebe6; --ink-2: #b9bbb8; --ink-3: #8a8e90;
+      --line: #2c3034; --teal: #3bb6b3; --teal-ink: #7fd3cf; --teal-soft: #17332f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141618; --surface: #1b1e21; --ink: #ecebe6; --ink-2: #b9bbb8; --ink-3: #8a8e90;
+    --line: #2c3034; --teal: #3bb6b3; --teal-ink: #7fd3cf; --teal-soft: #17332f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header { border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; gap: 10px; height: 56px; }
+  .brand { font-family: "Source Serif 4", serif; letter-spacing: .14em; font-weight: 560; }
+  .badge { background: var(--teal); color: #fff; border-radius: 99px; font-size: .62rem; font-weight: 600; padding: 1px 6px; }
+  .hero { display: grid; grid-template-columns: 1.2fr .8fr; gap: 48px; align-items: center; padding: 64px 0 48px; }
+  h1 { font-family: "Source Serif 4", serif; font-weight: 500; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.12; margin: 0 0 18px; }
+  .lead { color: var(--ink-2); font-size: 1.08rem; max-width: 34rem; margin: 0 0 28px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 99px; font-weight: 500; text-decoration: none; }
+  .btn-primary { background: var(--ink); color: var(--bg); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: var(--surface); }
+  .cover { aspect-ratio: 3/4; border-radius: 6px 14px 14px 6px; background: #fff; box-shadow: 0 30px 60px -30px rgba(0,0,0,.35); overflow: hidden; display: flex; flex-direction: column; max-width: 300px; margin-left: auto; width: 100%; }
+  .cover .top { flex: 1; padding: 28px 20px; text-align: center; color: #1c1f23; }
+  .cover .top b { font-family: "Source Serif 4", serif; letter-spacing: .16em; font-size: 1.3rem; font-weight: 600; }
+  .cover .top small { display: block; margin-top: 4px; letter-spacing: .3em; font-size: .6rem; color: #7d8288; }
+  .cover .bottom { height: 42%; background: var(--teal-cover); color: #fff; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .cover .bottom b { font-family: "Source Serif 4", serif; font-size: 3rem; line-height: 1; font-weight: 500; }
+  .cover .bottom small { letter-spacing: .25em; font-size: .6rem; margin-top: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-bottom: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .card h3 { font-family: "Source Serif 4", serif; font-weight: 500; font-size: 1.15rem; margin: 0 0 6px; }
+  .card p { margin: 0; color: var(--ink-2); font-size: .93rem; }
+  .note { background: var(--teal-soft); color: var(--teal-ink); border-radius: 14px; padding: 16px 18px; font-size: .93rem; margin-bottom: 56px; }
+  .note code { font-size: .88em; }
+  footer { border-top: 1px solid var(--line); color: var(--ink-3); font-size: .85rem; padding: 20px 0 32px; }
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 40px; }
+    .cover { margin: 0 auto; max-width: 220px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="brand">YEDİ İKLİM</span><span class="badge">A1</span></div></header>
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1>Бір кітап.<br>Төрт дағды.<br>Бір мұғалім.</h1>
+      <p class="lead">Yedi İklim Türkçe A1 оқулығына негізделген қазақ тілді оқушыларға арналған платформа: 192 беттің интерактивті сабағы, сөздік, жаттығулар, емтихан және AI мұғалім.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/diyorbekashurbekov/turktili">GitHub-тағы код</a>
+        <a class="btn btn-ghost" href="https://github.com/diyorbekashurbekov/turktili/blob/main/PROJECT.md">Жоба құжаты</a>
+      </div>
+    </div>
+    <div class="cover" aria-hidden="true">
+      <div class="top"><b>YEDİ İKLİM</b><small>TÜRKÇE</small></div>
+      <div class="bottom"><b>A1</b><small>DERS KİTABI</small></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card"><h3>Кітап</h3><p>192 беттің әрқайсысы: қазақша түсіндірме, жаңа сөздер, грамматика және тапсырмалар.</p></div>
+    <div class="card"><h3>Kelime Dünyası</h3><p>2 420 сөз қазақша аудармасымен, алты жаттығу түрі және аралықты қайталау.</p></div>
+    <div class="card"><h3>Төрт дағды</h3><p>Оқу, тыңдау, жазу және сөйлеу — 8 тараудың әрқайсысына.</p></div>
+    <div class="card"><h3>AI мұғалім</h3><p>Google Gemini: бетке сай қазақша түсіндіру, жазуды тексеру, Öğretmen және Sohbet сөйлеу режимдері.</p></div>
+    <div class="card"><h3>Түрікше дыбыс</h3><p>Gemini TTS (tr-TR) арқылы жасалған дыбыс, қалыпты және баяу жылдамдық.</p></div>
+    <div class="card"><h3>Емтихан және Фокус</h3><p>Уақыты бар сынақ емтихандары және емтихан күніне дейінгі жеке жоспар.</p></div>
+  </section>
+
+  <p class="note">Бұл бет — жобаның сипаттамасы. Платформаның өзі (AI мұғалім, аккаунттар, дерекқор) серверде жұмыс істейді, ал GitHub Pages тек статикалық беттерді көрсете алады. Іске қосу нұсқаулығы <code>PROJECT.md</code> файлында.</p>
+</main>
+<footer><div class="wrap">Yedi İklim A1 платформасы. Оқулық мәтіні мен суреттері баспаның рұқсатынсыз таратылмайды.</div></footer>
+</body>
+</html>
