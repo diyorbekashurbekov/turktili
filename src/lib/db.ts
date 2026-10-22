@@ -227,6 +227,9 @@ function backend(): Promise<Backend> {
   return g.__yiDb;
 }
 
+/** Which backend this process uses — for the health check (never exposes the URL or token). */
+export const dbKind = () => (TURSO_URL ? "turso" : "sqlite");
+
 export function dataDir() {
   return DATA_DIR;
 }

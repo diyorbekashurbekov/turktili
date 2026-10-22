@@ -1,3 +1,4 @@
+import { dbKind } from "@/lib/db";
 import { AudioErrorToast } from "@/components/audio-toast";
 import type { Metadata, Viewport } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
@@ -26,7 +27,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="kk" className={`${inter.variable} ${serif.variable}`}>
-      <body>
+      <body data-db={dbKind()}>
         <WordProvider>{children}</WordProvider>
         <AudioErrorToast />
       </body>
