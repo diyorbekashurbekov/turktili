@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Flag, GraduationCap, Keyboard, Loader2, MessagesSquare, Mic, MicOff, Play, RotateCcw, Square, Volume2 } from "lucide-react";
-import { speak, stopSpeaking, sttSupported, useRecognizer } from "@/lib/speech";
+import { speak, stopSpeaking, sttSupported, unlockAudio, useRecognizer } from "@/lib/speech";
 import { Rubric } from "./writing";
 
 type Msg = { role: "user" | "assistant"; content: string; note?: string };
@@ -77,6 +77,7 @@ export function SpeakingSession({
   const [draft, setDraft] = useState("");
   const [feedback, setFeedback] = useState<SpeakingFeedback | null>(null);
   const [aiSpeaking, setAiSpeaking] = useState(false);
+  const [blocked, setBlocked] = useState<{ text: string; then?: () => void } | null>(null);
   const [handsFree, setHandsFree] = useState(true);
   const [micOk, setMicOk] = useState(true);
   const rec = useRecognizer("tr-TR");
@@ -140,6 +141,7 @@ export function SpeakingSession({
   /** Plays the Turkish part of a reply; in Sohbet with hands-free on, listens again afterwards. */
   const voice = (text: string, then?: () => void) => {
     if (!text) return then?.();
+    setBlocked(null);
     setAiSpeaking(true);
     speak(text, {
       onEnd: () => {
@@ -147,7 +149,17 @@ export function SpeakingSession({
         then?.();
       },
       onError: () => setAiSpeaking(false),
+      // phone refused to start audio without a tap: offer a clear "listen" button instead of silence
+      onBlocked: () => {
+        setAiSpeaking(false);
+        setBlocked({ text, then });
+      },
     });
+  };
+  const playBlocked = () => {
+    if (!blocked) return;
+    unlockAudio();
+    voice(blocked.text, blocked.then);
   };
 
   const autoListen = () => {
@@ -326,7 +338,7 @@ export function SpeakingSession({
                   ? "Түрік досыңызбен сөйлескендей еркін сөйлесіңіз. Қолсыз режимде ол сөйлеп болған соң микрофон өзі қосылады."
                   : "Мұғалім түрікше сұрақ қояды. Жауап беріңіз — қатеңізді түзетіп, қиын жерін қазақша түсіндіреді."}
             </p>
-            <button className="btn btn-teal mt-6 h-12 px-6" onClick={() => textTurn([])} disabled={busy}>
+            <button className="btn btn-teal mt-6 h-12 px-6" onClick={() => (unlockAudio(), textTurn([]))} disabled={busy}>
               {busy ? <Loader2 size={17} className="animate-spin" /> : <Play size={17} />} Сөйлесуді бастау
             </button>
           </div>
@@ -358,11 +370,17 @@ export function SpeakingSession({
 
       {started && !feedback && (
         <div className="border-t hairline px-5 py-4">
+          {blocked && (
+            <button className="btn btn-teal mb-4 h-12 w-full" onClick={playBlocked}>
+              <Volume2 size={18} /> Мұғалімнің жауабын тыңдау
+            </button>
+          )}
           {textMode ? (
             <form
               className="flex gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
+                unlockAudio();
                 answerText(draft);
               }}
             >
@@ -381,7 +399,7 @@ export function SpeakingSession({
                 <button
                   className={`relative grid h-16 w-16 place-items-center rounded-full text-white transition-colors ${listening ? "bg-rose" : "bg-teal hover:bg-teal-ink"} disabled:opacity-40`}
                   disabled={processing}
-                  onClick={() => (listening ? rec.stop() : listen())}
+                  onClick={() => (unlockAudio(), listening ? rec.stop() : listen())}
                   aria-label={listening ? "Жауапты аяқтау" : "Жауап беру"}
                 >
                   {listening ? <Square size={20} /> : <Mic size={24} />}

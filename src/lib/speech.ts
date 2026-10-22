@@ -43,10 +43,68 @@ export type SpeakOptions = {
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (msg: string) => void;
+  /** the browser refused to start playback without a tap (mobile autoplay policy) */
+  onBlocked?: () => void;
 };
 
-let current: HTMLAudioElement | null = null;
+// One shared <audio> element for all speech. Phones (iOS Safari, Android Chrome) only allow
+// audio that starts inside a tap; a reply that arrives seconds later is blocked if it uses a
+// new element. An element that has played once inside a tap may play again later, so every
+// speaking control calls unlockAudio() in its click handler and speak() reuses that element.
+let player: HTMLAudioElement | null = null;
+let unlocked = false;
 let token = 0;
+
+function getPlayer() {
+  if (!player) {
+    player = new Audio();
+    player.preload = "auto";
+    player.setAttribute("playsinline", "");
+  }
+  return player;
+}
+
+/** 50 ms of silence as a WAV blob URL (used to unlock the shared player). */
+let silentUrl: string | null = null;
+function silence() {
+  if (silentUrl) return silentUrl;
+  const rate = 8000;
+  const n = rate / 20;
+  const b = new DataView(new ArrayBuffer(44 + n * 2));
+  const w = (o: number, s: string) => [...s].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF");
+  b.setUint32(4, 36 + n * 2, true);
+  w(8, "WAVEfmt ");
+  b.setUint32(16, 16, true);
+  b.setUint16(20, 1, true);
+  b.setUint16(22, 1, true);
+  b.setUint32(24, rate, true);
+  b.setUint32(28, rate * 2, true);
+  b.setUint16(32, 2, true);
+  b.setUint16(34, 16, true);
+  w(36, "data");
+  b.setUint32(40, n * 2, true);
+  silentUrl = URL.createObjectURL(new Blob([b.buffer], { type: "audio/wav" }));
+  return silentUrl;
+}
+
+/** Call synchronously inside a tap/click handler before any delayed speech. Safe to call often. */
+export function unlockAudio() {
+  if (typeof window === "undefined" || unlocked) return;
+  const p = getPlayer();
+  try {
+    p.src = silence();
+    p.play()
+      .then(() => {
+        unlocked = true;
+      })
+      .catch(() => undefined);
+  } catch {
+    /* ignore */
+  }
+  // the browser's own speech engine needs the same gesture on iOS
+  if ("speechSynthesis" in window) window.speechSynthesis.resume();
+}
 
 const voiceOf = (v?: SpeakOptions["voice"]) => (v === "b" || v === "m" ? "m" : "f");
 
@@ -79,13 +137,15 @@ export function speak(text: string, opts: SpeakOptions = {}) {
   stopSpeaking();
   const my = ++token;
   const voice = voiceOf(opts.voice);
-  const audio = new Audio(ttsUrl(text, voice));
-  audio.preload = "auto";
-  audio.playbackRate = opts.rate ?? 1;
+  const audio = getPlayer();
+  const rate = opts.rate ?? 1;
+  audio.src = ttsUrl(text, voice);
+  audio.playbackRate = rate;
   (audio as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
-  current = audio;
   audio.onplaying = () => {
-    if (my === token) opts.onStart?.();
+    if (my !== token) return;
+    audio.playbackRate = rate; // some browsers reset the rate when the source changes
+    opts.onStart?.();
   };
   audio.onended = () => {
     if (my === token) opts.onEnd?.();
@@ -105,17 +165,21 @@ export function speak(text: string, opts: SpeakOptions = {}) {
     opts.onError?.(msg);
     opts.onEnd?.();
   };
-  audio.play().catch(() => {
-    /* autoplay policy: onerror/onended still drive state */
+  audio.play().catch((err: DOMException) => {
+    if (my !== token || err?.name !== "NotAllowedError") return; // load errors are handled by onerror
+    // blocked by the autoplay policy: let the UI offer a "tap to listen" button
+    if (opts.onBlocked) return opts.onBlocked();
+    notify("Телефон дыбысты өздігінен қоспады. Тыңдау үшін 🔊 белгісін басыңыз.");
+    opts.onEnd?.();
   });
   return true;
 }
 
 export function stopSpeaking() {
   token++;
-  if (current) {
-    current.pause();
-    current = null;
+  if (player) {
+    player.onended = player.onerror = player.onplaying = null;
+    player.pause();
   }
   if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
 }
